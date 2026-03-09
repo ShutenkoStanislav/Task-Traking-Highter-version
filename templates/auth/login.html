@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modal_styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper login-wrapper">
+    <div class="auth-container login-container">
+        <form method="post">
+            {% csrf_token %}
+            <br>
+            <div class="text-center mb-4">
+                <h1>Welcome back, user!</h1>
+            </div>
+            <hr>
+            <br>
+
+            <div class="input_group">
+                <div class="mb-3">
+                    <input class="form-control form-control-lg" type="text"  name="username" placeholder="Login" required>
+                </div>
+
+                <div class="mb-3">
+                    <input class="form-control form-control-lg" type="password" name="password" placeholder="Password" required>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <button type="submit" class="btn btn-dark btn-lg">Login</button>
+                </div>
+            </div>
+
+            
+
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

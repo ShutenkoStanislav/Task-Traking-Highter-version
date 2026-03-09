@@ -1,0 +1,214 @@
+.modal .noborder-input {
+    background-color: transparent;
+    border: none;
+    color: #202020;
+    padding: 8px 0;
+    transition: all 0.2s ease;
+}
+
+.modal .noborder-input:focus {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    
+}
+
+.modal .noborder-input::placeholder {
+    color: #959595;
+    opacity: 1;
+}
+
+.modal .title-input {
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.modal .content-input {
+    font-size: 24px;
+    font-weight: 400;
+    resize: none;
+}
+
+
+.modal label {
+    display: none !important;
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+}
+
+
+.modal input[type="date"] {
+    position: relative;
+    padding: 8px 12px;
+}
+
+
+.modal input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.modal input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+
+/* Auth */
+
+.auth-container {
+    background-color: #D9D9D9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    color: black;
+    padding: 60px;
+    max-width: 500px;
+    
+}
+
+.auth-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;   
+}
+
+.login-container {
+    max-width: 500px;
+}
+
+.login-wrapper {
+    padding: 180px;    
+}
+
+.singin-container {
+    max-width: 600px;
+}
+
+.singin-wrapper {
+    padding: 100px;
+   
+}
+
+
+
+
+.input_group {
+    margin-bottom: 0px;
+    border-radius: 8px;
+}
+
+/* task list */
+
+.task-area {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3 ease;
+}
+
+.task-area:hover {
+    border-color: #000 !important;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.task-area * {
+    pointer-events: none;
+}
+
+.task-area .detail_link,
+.task-area .form-check,
+.task-area .form-check-input
+{
+    pointer-events: auto;
+}
+
+/* profile */
+
+.data-container {
+    display: flex;
+    background-color: #D9D9D9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    flex-direction: column;
+    padding: 30px 30px;
+    gap: 35px;
+    margin-bottom: 20px;
+}
+
+.ifna-container {
+    display: flex;
+    background-color: #ffffff ;
+    color: #000;
+    border-radius: 12px;
+    justify-content: space-between;
+    padding: 30px 40px;
+    align-items: center;
+}
+
+.data-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    max-width: 900px;
+    margin-left: 450px;
+    margin-top: -500px;
+}
+
+.profile-icon-link {
+    display: inline-block;
+    padding: 100px;
+    border: 3px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.profile-icon-link:hover{
+    transform: scale(1.05);
+    
+}
+
+/* delete icon */
+
+.folder-row {
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.folder-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.delete-btn-hidden {
+    opacity: 0 ;
+    visibility: hidden ;
+    transition: all 0.2s ease-in-out;
+    width: 24px;
+    text-align: center;
+}
+
+.folder-row:hover .delete-btn-hidden {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+
+

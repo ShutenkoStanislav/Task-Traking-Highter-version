@@ -1,0 +1,104 @@
+# --- 🔹 Налаштування середовища Django у PowerShell --- #
+
+# 1. Перейти в потрібну папку (де буде проект)
+cd "D:\role manager\Roles_MAnager"
+
+# 2. Створити віртуальне середовище (venv)
+python -m venv venv
+
+# 3. Активувати віртуальне середовище у PowerShell
+.\venv\Scripts\Activate.ps1
+
+# 4. Якщо PowerShell забороняє виконання скриптів — дозволяємо
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 5. Встановити Django у середовище
+pip install django
+
+# 6. Перевірити, чи Django встановлено
+django-admin --version
+
+
+# --- 🔹 Створення та запуск проекту --- #
+
+# 7. Створити новий Django-проєкт
+django-admin startproject project_name
+
+# 8. Зайти в папку проекту
+cd project_name
+
+# 9. Створити новий додаток (app)
+project
+
+# 10. Запустити сервер для перевірки
+python manage.py runserver
+
+
+# --- 🔹 Робота з моделями та міграціями --- #
+
+# 11. Створити або оновити файли міграцій (після змін у models.py)
+python manage.py makemigrations
+
+# 12. Застосувати всі міграції до бази даних
+python manage.py migrate
+
+# 13. Перевірити, які міграції створено
+python manage.py showmigrations
+
+# 14. Якщо пише “No changes detected” → перевір чи app додано в INSTALLED_APPS
+
+
+# --- 🔹 Тестування моделей та даних --- #
+
+# 15. Відкрити Django shell (для тесту створення об'єктів)
+python manage.py shell
+
+# 16. Приклад створення об’єкта у shell:
+# >>> from app_name.models import Users
+# >>> user = Users.objects.create(name="Stan", email="s@ex.com")
+
+# 17. Подивитись усі об’єкти моделі:
+# >>> Users.objects.all()
+
+
+# --- 🔹 Корисні перевірки та виправлення --- #
+
+# 18. Якщо manage.py не знаходиться → перевір що ти в папці проекту:
+# команда для перегляду файлів:
+dir
+
+# 19. Перенести файл у потрібну папку (наприклад models.py)
+Move-Item -Path ".\models.py" -Destination ".\user_management\models.py"
+
+# 20. Вийти з віртуального середовища
+deactivate
+
+
+cd Blog_project
+
+pwd  # Показує поточну папку
+ls   # Показує файли (має бути manage.py)
+
+(venv) PS D:\reservation_django\reservation_system_py> cd ..
+(venv) PS D:\reservation_django> cd reservation_system_py-1
+(venv) PS D:\reservation_django\reservation_system_py-1> ls
+
+<i class="bi bi-person-circle"></i> add profile logo 
+<i class="bi bi-chat-left-fill"></i> comment logo 
+<i class="bi bi-pencil-square"></i> edit logo
+<i class="bi bi-calendar-fill"></i> calendar logo
+<i class="bi bi-plus-circle-fill"></i> add folder of task
+<i class="bi bi-calendar-plus"></i> calendar logo for form
+<i class="bi bi-flag-fill"></i> priorety flag
+
+<i class="bi bi-trash-fill"></i>
+
+
+
+<!--<form method="get" class="form-inline mb-3">
+            {{ form.priority.label_tag }}
+            {{ form.priority}}
+            <button type="submit" class="btn btn-primary ml-2">Filter</button>
+    </form> -->
+
+    
