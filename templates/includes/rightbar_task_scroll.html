@@ -1,0 +1,44 @@
+<div class="task-scroling">
+    <li class="list-group-item  border-0 p-1 bg-transparent" style="min-height: 80px;"> 
+        <div class="task-area d-flex align-items-center p-3">
+            <div class="form-check ms-2" style="z-index: 10;"> 
+                <input  class="form-check-input task-complete-input"
+                        type="checkbox"
+                        name="checkboxDefault"
+                        id="checkboxTask{{ task.pk }}" 
+                        data-url="{% url 'tasks:task-complete' task.pk %}"
+                        style="transform: scale(1.5); cursor: pointer;">
+                <label class="form-check-label" for="checkboxTask{{ task.pk }}"></label>
+            </div>
+        
+            <div class="flex-grow-1 p-3">
+                <p class="task-date text-muted mb-1 small">{{ task.due_date }}</p>
+
+                
+
+                <h5 class="mb-1">
+                    {% if task.priority == 'high' %}
+                        <span class="text-danger fw-bold fs-5">!!!</span>   
+                    {% elif task.priority == 'medium' %}
+                        <span class="text-warning fw-bold fs-5">!!</span>  
+                    {% else %}
+                        <span class="text-success fw-bold fs-5">!</span>
+                    {% endif %}
+                    {{ task.title }}
+                </h5>
+
+                
+
+
+                <p class="text-secondary mb-0 text-truncate" style="max-width: 500px;">{{ task.description }}</p>
+            </div>
+
+            <button type="button" 
+                class="stretched-link detail_link border-0 p-0 bg-transparent" 
+                data-bs-toggle="modal" 
+                data-bs-target="#editModal{{ task.pk }}">
+            </button>
+        </div>
+    </li>
+</div>
+<hr class="m-0">  

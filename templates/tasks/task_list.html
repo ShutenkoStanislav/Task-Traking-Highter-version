@@ -1,165 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/modal_styles.css' %}">
 {% endblock %}
 
 {% block content %}
-{% load custom_tags %}
 <div class="d-flex">
-    <div class="bg-light border-end" style="width: 22%; min-height: 100vh;">
-  
-        <div class="dropdown-center mb-3">
-            <button class="btn btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle"></i>  {{ user.username }}
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'tasks:profile'%}">Profile</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    
-                        {% if user.is_authenticated %}
-                            <form action="{% url 'tasks:logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="dropdown-item" style="background: none; border: none; text-align: left; width: 100%; cursor: pointer;">
-                                    Log out
-                                </button>  
-                            </form>
-                        {% else %}
-                                <a href="{% url 'tasks:login' %}" class="dropdown-item">Login</a>
-                        {% endif %}
-                    
-                </li>
-                <li><a class="dropdown-item" href="{% url 'tasks:register' %}">Sign in</a></li>
-            </ul>
-        </div>
-
-        <div class="d-flex flex-column align-items-start gap-3">
-            <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#TaskModal">
-                <i class="bi bi-plus-circle-fill"></i> Add task
-            </a>
-            <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#FolderModal">
-                <i class="bi bi-plus-circle-fill"></i> Add folder
-            </a>
-            <a class="btn btn-lg" href="{% url 'tasks:task_list' %}">
-                <i class="bi bi-calendar-fill"></i> Today
-            </a>
-            <h2>My tasks</h2>
-        </div>
-        <div data-simplebar style="max-height: 500px; overflow-x: hidden;">
-            <div class="d-flex flex-column align-items-start gap-3 ps-4">
-                {% for folder in folders %}
-                    <div class="folder-row d-flex align-items-center justify-content-between p-2 rounded">
-                        <a
-                        href="{% url 'tasks:folder-tasks' folder.pk %}"
-                        class="btn btn-lg"
-                        style="color: {{ folder.color }}; font-weight: bold;"
-                        >
-                        #{{ folder.name }} </a>
-                        <button type="button"
-                                class="btn p-0 border-0 delete-btn-hidden"
-                                data-bs-toggle="modal"
-                                data-bs-target="#DeletefolderModal-{{ folder.pk }}">
-                            <i class="bi bi-trash-fill text-danger"></i>
-                        </button>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="TaskModal" tabindex="-1" aria-labelledby="TaskModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                
-                
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="TaskModalLabel">Add Task</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                
-                <form method="post" action="{% url 'tasks:task-create' %}">
-                    <div class="modal-body p-4">
-                        {% csrf_token %}
-                        
-                        {% if current_folder%}
-                            <input type="hidden" name="folder" value="{{ current_folder.id }}">
-                        {% endif %}
-
-                        <div class="mb-3">
-                            <label class="form-label"></label>
-                            {{ task_form.title }}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label"></label>
-                            {{ task_form.description }}
-                        </div>
-                        <br>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label"></label>
-                                {{ task_form.due_date }}
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <label class="form-label"></label>
-                                {{ task_form.priority }}
-                            </div>
-
-                        </div>
-                    </div>
-
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Add</button>
-                    </div>
-                </form>
-                
-            </div>
-        </div>
-    </div>
-    
-    
-    
-
-    <div class="modal fade" id="FolderModal" tabindex="-1" aria-labelledby="FolderModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="FolderModalLabel">Add Folder</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <form method="post" action="{% url 'tasks:folder-create' %}">
-                    <div class="modal-body">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label"></label>
-                            {{ folder_form.name }}
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="mb-3">
-                                <label class="form-label"></label>
-                                {{  folder_form.color }}
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Add</button>
-                    </div>
-                </form>                
-            </div>
-        </div>
-    </div>
-
-
+    {% include 'includes/leftbar.html' %}
 
     <div class="flex-grow-1 p-4" >
         {% if current_folder %}
@@ -172,50 +21,8 @@
         <ul class="list-group list-group-flush" data-simplebar style="max-height: 700px; overflow-x: hidden;">
         
             {% for task in tasks %}
-                <div class="task-scroling">
-                    <li class="list-group-item  border-0 p-1 bg-transparent" style="min-height: 80px;"> 
-                        <div class="task-area d-flex align-items-center p-3">
-                            <div class="form-check ms-2" style="z-index: 10;"> 
-                                <input  class="form-check-input task-complete-input"
-                                        type="checkbox"
-                                        name="checkboxDefault"
-                                        id="checkboxTask{{ task.pk }}" 
-                                        data-url="{% url 'tasks:task-complete' task.pk %}"
-                                        style="transform: scale(1.5); cursor: pointer;">
-                                <label class="form-check-label" for="checkboxTask{{ task.pk }}"></label>
-                            </div>
-                        
-                            <div class="flex-grow-1 p-3">
-                                <p class="task-date text-muted mb-1 small">{{ task.due_date }}</p>
-
-                                
-
-                                <h5 class="mb-1">
-                                    {% if task.priority == 'high' %}
-                                        <span class="text-danger fw-bold fs-5">!!!</span>   
-                                    {% elif task.priority == 'medium' %}
-                                        <span class="text-warning fw-bold fs-5">!!</span>  
-                                    {% else %}
-                                        <span class="text-success fw-bold fs-5">!</span>
-                                    {% endif %}
-                                    {{ task.title }}
-                                </h5>
-
-                                
-
-
-                                <p class="text-secondary mb-0 text-truncate" style="max-width: 500px;">{{ task.description }}</p>
-                            </div>
-
-                            <button type="button" 
-                                class="stretched-link detail_link border-0 p-0 bg-transparent" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editModal{{ task.pk }}">
-                            </button>
-                        </div>
-                    </li>
-                </div>
-                <hr class="m-0">  
+                {% include 'includes/rightbar_task_scroll.html' with task=task %}
+ 
                 
             {% empty %}
                 <li class="list-group-item text-center py-4 text-muted">
@@ -223,168 +30,25 @@
                     <p class="mb-0">Tasks not found</p>
                 </li>
             {% endfor %}
-
-            
+  
         </ul>
         <div class="list-group-item border-0 pt-3">
             <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#TaskModal">
                 <i class="bi bi-plus-circle-fill"></i> Add task
             </a>
-        </div>
-        
+        </div> 
     </div>
-    {% for task in tasks %}
-        <div class="modal fade" id="editModal{{ task.pk }}" tabindex="-1" aria-labelledby="editModalLabel{{ task.pk }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content overflow-hidden">
-                    
-                    <form action="{% url 'tasks:task_update' task.pk %}" method="post">  
-                        {% csrf_token %}
-                        
-                        <div class="modal-header align-items-start">
-                            
-                            <div class="w-100 me-3">
-                                <fieldset id="fieldset-{{ task.pk }}" disabled> 
-                                    <input type="text" name="title"
-                                        class="form-control noborder-input title-input"
-                                        value="{{ task.title }}" 
-                                        placeholder="Title" required>
-                                    
-                                    <textarea name="description"
-                                        class="form-control noborder-input content-input"
-                                        placeholder="Content"
-                                        rows="2"
-                                        style="resize: none;">{{ task.description }}</textarea>
-
-                                    <select name="priority"
-                                        class="form-select border-0 d-inline-block w-auto py-0 ps-2 pe-4 fw-bold small"
-                                        style="cursor: pointer; background-color: #e9ecef;">
-                                        <option value="low" {% if task.priority == 'low' %}selected{% endif %}>Low</option>
-                                        <option value="medium" {% if task.priority == 'medium' %}selected{% endif %}>Medium</option>
-                                        <option value="high" {% if task.priority == 'high' %}selected{% endif %}>High</option>
-                                    </select>
-                                </fieldset>
-                            </div>
-
-                            <div class="d-flex flex-column align-items-end gap-2" style="min-width: 80px;">
-                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
-
-                                <button type="button" id="edit-btn-{{ task.pk }}"
-                                        class="btn btn-sm btn-outline-dark w-100"
-                                        onclick="enableEditing('{{ task.pk }}')">
-                                    Edit
-                                </button>
-
-                                <button type="submit" id="save-btn-{{ task.pk }}"
-                                        class="btn btn-sm btn-success w-100 d-none">
-                                    Save
-                                </button>
-
-                                <button type="button" class="btn btn-sm btn-danger w-100"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#DeletetaskModal-{{ task.pk }}"
-                                        data-bs-dismiss="modal">
-                                    Delete
-                                </button>
-                            </div>
-                        </div> 
-                    </form> 
-                    <div class="modal-body bg-light">
-                        <div class="comments">
-                            <h5 class="mb-3">Comments</h5>
-                            
-                            <div class="comment-list mb-4" style="max-height: 300px; overflow-y: auto;">
-                                {% for comment in task.comments.all %}
-                                    <div class="comment mb-3 p-3 border rounded shadow-sm bg-white">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>{{ comment.creator.username }}</strong>
-                                            <small class="text-muted">{{ comment.created_at|date:"d M, H:i" }}</small>
-                                        </div>
-                                        
-                                        <p class="mt-2 mb-1">{{ comment.content }}</p>
-
-                                        {% if comment.media %}
-                                            <div class="comment-media mt-2">
-                                                {% if ".jpg" in comment.media.url or ".png" in comment.media.url or ".jpeg" in comment.media.url %}
-                                                    <img src="{{ comment.media.url }}" class="img-fluid rounded" style="max-width: 250px;">
-                                                {% elif ".mp4" in comment.media.url %}
-                                                    <video style="max-width: 250px;" controls>
-                                                        <source src="{{ comment.media.url }}" type="video/mp4">
-                                                    </video>
-                                                {% else %}
-                                                    <a href="{{ comment.media.url }}" target="_blank">Download File</a>
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% empty %}
-                                    <p class="text-muted text-center py-2">No comments yet. Be the first!</p>
-                                {% endfor %}
-                            </div>
-
-
-                            <div class="add-comment border-top pt-3">
-                                <form action="{% url 'tasks:task_detail' task.pk %}" method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    
-                                    <div class="mb-2">
-                                        {{ comment_form.content }} 
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        {{ comment_form.media }}
-                                    </div>
-                                    
-                                    <div class="d-flex gap-2 justify-content-end">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-dark btn-sm">Post Comment</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div> 
-                </div>                
-            </div>
-        </div>
-
-        <div class="modal fade" id="DeletetaskModal-{{ task.pk }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-sm modal-dialog-centered">
-                <div class="modal-content">          
-                    <div class="modal-body text-center p-4">   
-                        <h4 class="mb-3">Delete task?</h4>
-                        <p class="text-muted mb-4">Are you sure you want to delete <strong>"{{ task.title }}"</strong>?</p>
-                        
-                        <form action="{% url 'tasks:task_delete' task.pk %}" method="post">
-                            {% csrf_token %}
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>        
-                            </div>
-                        </form>   
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-
-        {% for folder in folders %}
-            <div class="modal fade" id="DeletefolderModal-{{ folder.pk }}" tabindex="-1" aria-labelledby="deletefolderModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-sm modal-dialog-centered">
-                    <div class="modal-content">           
-                        <div class="modal-body text-center p-4">   
-                            <h2>Delete folder?</h2>
-                            <p class="text-muted mb-4">Are you sure you want to delete <strong>""{{ folder.name }}""</strong>?</p>
-                            <form action="{% url 'tasks:folder_delete' folder.pk %}" method="post" class="mt-3">
-                                {% csrf_token %}
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>   
-                                </div>     
-                            </form>   
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
 </div>
+
+{% include 'includes/modal_task_create.html' %}  
+{% include 'includes/modal_folder_create.html' %}
+
+{% for task in tasks %}
+    {% include 'includes/modal_task_edit.html' with task=task %}      
+{% endfor %}
+
+{% for folder in folders %}
+    {% include 'includes/modal_folder_delete.html' with folder=folder %}
+{% endfor %}
+
 {% endblock %}

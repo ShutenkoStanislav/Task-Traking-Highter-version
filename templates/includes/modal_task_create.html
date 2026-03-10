@@ -1,0 +1,56 @@
+<div class="modal fade" id="TaskModal" tabindex="-1" aria-labelledby="TaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            
+            
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="TaskModalLabel">Add Task</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            
+            <form method="post" action="{% url 'tasks:task-create' %}">
+                <div class="modal-body p-4">
+                    {% csrf_token %}
+                    
+                    {% if current_folder%}
+                        <input type="hidden" name="folder" value="{{ current_folder.id }}">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label"></label>
+                        {{ task_form.title }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"></label>
+                        {{ task_form.description }}
+                    </div>
+                    <br>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label"></label>
+                            {{ task_form.due_date }}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label"></label>
+                            {{ task_form.priority }}
+                        </div>
+
+                    </div>
+                </div>
+
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add</button>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+    
+    
+    
