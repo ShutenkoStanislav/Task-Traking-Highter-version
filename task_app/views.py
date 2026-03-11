@@ -14,13 +14,13 @@ from django.contrib.auth import login
 
 
 
-class TaskListView(ListView):
+class TaskListView(LoginRequiredMixin, ListView):
     model = models.Task
     context_object_name = "tasks"
     template_name = "tasks/task_list.html"
 
     def get_queryset(self):
-        queryset = models.Task.objects.filter(creator=self.request.user)
+        queryset = models.Task.objects.filter(creator=self.request.user).prefetch_related('comments')
 
         folder_id = self.kwargs.get('folder_id')
 
@@ -63,6 +63,9 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "task"
     template_name = "tasks/task_detail.html"
 
+    def get_queryset(self):
+        return models.Task.objects.filter(creator=self.request.user)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comment_form'] = CommentForm()
@@ -92,7 +95,6 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = models.Task
-    context_object_name = "taskes"
     success_url = reverse_lazy('tasks:task_list')
     template_name = "tasks/task_form.html"
     form_class = TaskForm
@@ -102,9 +104,8 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        folder_id = self.object.folder_id
-        if folder_id:
-            return reverse_lazy('tasks:folder-tasks', kwargs={'folder_id': folder_id})
+        if self.object.folder:
+            return reverse_lazy('tasks:folder-tasks', kwargs={'folder_id': self.object.folder.id})
         return reverse_lazy('tasks:task_list')
 
     
@@ -123,7 +124,7 @@ class FolderCreateView(LoginRequiredMixin, CreateView):
     
 class TaskCompleteView(LoginRequiredMixin,  View):
     def post(self, request, *args, **kwargs):
-        task = self.get_object()
+        task = get_object_or_404(models.Task, pk=self.kwargs.get("pk"), creator=self.request.user)
         task.status = "done"
         task.save()
         return JsonResponse({'status': 'success'})
@@ -136,25 +137,35 @@ class TaskCompleteView(LoginRequiredMixin,  View):
 class TaskUpdateView(LoginRequiredMixin,  UpdateView):
     model = models.Task
     fields = ["title", "description", "priority"] 
-    template_name = "tasks/task_update_form.html"
 
     def get_queryset(self):
         return models.Task.objects.filter(creator=self.request.user)
         
     
     def get_success_url(self):
-        return self.request.META.get('HTTP_REFERER', reverse_lazy('tasks:task_list'))
+        return self.request.META.get('HTTP_REFERER') or reverse_lazy('tasks:task_list')
         
 
-class TaskDeleteView(LoginRequiredMixin, UserIsOwner, DeleteView):
+class TaskDeleteView(LoginRequiredMixin ,DeleteView):
     model = models.Task
-    success_url = reverse_lazy('tasks:task_list')
     
+    def get_queryset(self):
+        return models.Task.objects.filter(creator=self.request.user)
+        
+    
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER') or reverse_lazy('tasks:task_list')
     
 
-class FolderDeleteView(LoginRequiredMixin, UserIsOwner, DeleteView):
+class FolderDeleteView(LoginRequiredMixin ,DeleteView):
     model = models.Folder
-    success_url = reverse_lazy('tasks:task_list')
+    
+    def get_queryset(self):
+        return models.Folder.objects.filter(creator=self.request.user)
+        
+    
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER') or reverse_lazy('tasks:task_list')
 
 class CustomLoginView(LoginView):
     template_name = "auth/login.html"
@@ -173,7 +184,7 @@ class RegisterViews(CreateView):
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect("tasks:login")
+        return redirect("tasks:task_list")
 
 
 @login_required   
