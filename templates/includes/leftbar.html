@@ -1,4 +1,4 @@
-<div class="bg-light border-end" style="width: 22%; min-height: 100vh;">
+<div id="leftbar" class="bg-light border-end" style="width: 22%; min-height: 100vh; position: relative;">
     <div class="dropdown-center mb-3">
         <button class="btn btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-person-circle"></i>  {{ user.username }}
@@ -55,5 +55,11 @@
                 </div>
             {% endfor %}
         </div>
+    </div>
+
+    <div id="leftbar-resizer" 
+        style="position: absolute;
+            top: 0;right: 0; width: 3.5px; height: 100%;cursor: col-resize;
+            z-index: 100;">  
     </div>
 </div>

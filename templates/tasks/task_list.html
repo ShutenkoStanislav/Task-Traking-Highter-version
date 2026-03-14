@@ -9,7 +9,7 @@
 <div class="d-flex">
     {% include 'includes/leftbar.html' %}
 
-    <div class="flex-grow-1 p-4" >
+    <div class="p-4" style="flex: 1 1 0; min-width: 0;">
         {% if current_folder %}
             <h2>/{{ current_folder.name }}</h2>
         {% else %}
