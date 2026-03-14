@@ -222,3 +222,8 @@
     opacity: 1;
 }
 
+/* hide a folders */
+
+#folder_list {
+    transition: opacity 0.3s ease;
+}

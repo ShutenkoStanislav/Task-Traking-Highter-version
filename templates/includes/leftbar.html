@@ -34,9 +34,11 @@
         <a class="btn btn-lg" href="{% url 'tasks:task_list' %}">
             <i class="bi bi-calendar-fill"></i> Today
         </a>
-        <h2>My tasks</h2>
+        <h2 id="folders-toggle" style="cursor: pointer; user-select: none;">
+            My tasks <span id="folders-arrow" class="bi bi-caret-up-fill" style="font-size: 16px;"></span>
+        </h2>
     </div>
-    <div data-simplebar style="max-height: 500px; overflow-x: hidden;">
+    <div id="folder_list" data-simplebar style="max-height: 500px; overflow-x: hidden;">
         <div class="d-flex flex-column align-items-start gap-3 ps-4">
             {% for folder in folders %}
                 <div class="folder-row d-flex align-items-center justify-content-between p-2 rounded">
