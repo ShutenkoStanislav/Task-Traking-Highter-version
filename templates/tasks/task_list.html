@@ -5,7 +5,6 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/modal_styles.css' %}">
 {% endblock %}
-
 {% block content %}
 <div class="d-flex">
     {% include 'includes/leftbar.html' %}
@@ -43,9 +42,9 @@
 {% include 'includes/modal_task_create.html' %}  
 {% include 'includes/modal_folder_create.html' %}
 
-{% for task in tasks %}
-    {% include 'includes/modal_task_edit.html' with task=task %}      
-{% endfor %}
+
+{% include 'includes/modal_task_edit.html' %} 
+
 
 {% for folder in folders %}
     {% include 'includes/modal_folder_delete.html' with folder=folder %}

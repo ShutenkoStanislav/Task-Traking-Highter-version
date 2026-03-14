@@ -9,6 +9,7 @@ from task_app.mixins import UserIsOwner
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 from django.contrib.auth import login
 
@@ -36,6 +37,7 @@ class TaskListView(LoginRequiredMixin, ListView):
         else:
            queryset = queryset.exclude(status__iexact="done")
 
+
         
         return queryset.order_by("due_date")
         
@@ -55,6 +57,9 @@ class TaskListView(LoginRequiredMixin, ListView):
         context["folder_form"] = FolderForm()
 
         context["comment_form"] = CommentForm()
+
+        context["comments"] = models.Comment.objects.filter(
+            task__creator=self.request.user).select_related('creator', 'task')
         
         return context
 
@@ -201,5 +206,4 @@ def profile_details(request):
         context=context,
 
     )
-
 

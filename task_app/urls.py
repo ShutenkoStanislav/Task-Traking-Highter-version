@@ -26,7 +26,8 @@ urlpatterns = [
     path('sing-in/', views.RegisterViews.as_view(), name="register"),
     
     path('profile/', views.profile_details, name="profile"),
-    
 
+    
+    
 ]
 

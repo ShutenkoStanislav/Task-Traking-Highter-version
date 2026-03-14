@@ -36,7 +36,11 @@
             <button type="button" 
                 class="stretched-link detail_link border-0 p-0 bg-transparent" 
                 data-bs-toggle="modal" 
-                data-bs-target="#editModal{{ task.pk }}">
+                data-bs-target="#universalTaskModal"
+                data-task-id="{{ task.pk }}"
+                data-title="{{ task.title }}"
+                data-description="{{ task.description }}"
+                data-priority="{{ task.priority }}">
             </button>
         </div>
     </li>
