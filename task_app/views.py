@@ -88,9 +88,9 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
             comment.task = self.get_object()
             comment.save()
 
-            next_url = request.META.get('HTTP_REFERER')
+            next_url = request.META.get('HTTP_REFERER', '')
             if next_url:
-                return HttpResponseRedirect(next_url)
+                return HttpResponseRedirect(f'{next_url}?open={self.object.pk}')
             else:
                 return redirect("tasks:task_list")
         else:
@@ -148,7 +148,10 @@ class TaskUpdateView(LoginRequiredMixin,  UpdateView):
         
     
     def get_success_url(self):
-        return self.request.META.get('HTTP_REFERER') or reverse_lazy('tasks:task_list')
+       referer = self.request.META.get('HTTP_REFERER', '')
+
+       base_url = referer.split('?')[0]
+       return f'{base_url}?open={self.object.pk}'
         
 
 class TaskDeleteView(LoginRequiredMixin ,DeleteView):

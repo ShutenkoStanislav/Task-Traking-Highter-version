@@ -31,6 +31,15 @@ document.getElementById('comment-media').addEventListener('change', function() {
     document.getElementById('media-fileman').textContent = filename;
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const openPk = urlParams.get('open');
+    if (openPk) {
+        const btn = document.querySelector(`[data-task-id="${openPk}"]`);
+        if (btn) btn.click();
+    }
+});
+
 function enableModalEditing() {
     document.getElementById('modal-fieldset').disabled = false;
     document.getElementById('modal-edit-btn').classList.add('d-none');
