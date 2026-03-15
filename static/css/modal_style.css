@@ -225,7 +225,13 @@
 /* hide a folders */
 
 #folder_list {
-    transition: opacity 0.3s ease;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden !important;
+}
+
+#folder_list.pre-hidden {
+    max-height: 0 !important;
+    opacity: 0 !important;
 }
 
 /* select menus */

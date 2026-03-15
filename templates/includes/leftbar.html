@@ -7,18 +7,16 @@
             <li><a class="dropdown-item" href="{% url 'tasks:profile'%}">Profile</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
-                
-                    {% if user.is_authenticated %}
-                        <form action="{% url 'tasks:logout' %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="dropdown-item" style="background: none; border: none; text-align: left; width: 100%; cursor: pointer;">
-                                Log out
-                            </button>  
-                        </form>
-                    {% else %}
-                            <a href="{% url 'tasks:login' %}" class="dropdown-item">Login</a>
-                    {% endif %}
-                
+                {% if user.is_authenticated %}
+                    <form action="{% url 'tasks:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item" style="background: none; border: none; text-align: left; width: 100%; cursor: pointer;">
+                            Log out
+                        </button>  
+                    </form>
+                {% else %}
+                        <a href="{% url 'tasks:login' %}" class="dropdown-item">Login</a>
+                {% endif %}  
             </li>
             <li><a class="dropdown-item" href="{% url 'tasks:register' %}">Sign in</a></li>
         </ul>

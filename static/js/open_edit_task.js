@@ -18,10 +18,17 @@ document.getElementById('universalTaskModal')
         document.getElementById('modal-edit-btn').classList.remove('d-none');
         document.getElementById('modal-save-btn').classList.add('d-none');
 
+        
+
         document.querySelectorAll('.comment[data-comment-task]').forEach(function(el) {
             el.style.display = el.dataset.commentTask == pk ? '' : 'none';
         });
 
+});
+
+document.getElementById('comment-media').addEventListener('change', function() {
+    const filename = this.files[0] ? this.files[0].name : 'No media';
+    document.getElementById('media-fileman').textContent = filename;
 });
 
 function enableModalEditing() {

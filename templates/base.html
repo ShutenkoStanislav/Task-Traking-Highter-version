@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/modal_style.css'%}">
+    <script>
+        if (localStorage.getItem('folderOpen') === 'false') {
+            document.addEventListener('DOMContentLoaded', function() {
+                const fl = document.getElementById('folder_list');
+                if (fl) {
+                    fl.style.maxHeight = '0';
+                    fl.style.opacity = '0';
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 
