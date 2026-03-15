@@ -5,7 +5,10 @@ document.getElementById('universalTaskModal')
 
         document.getElementById('modal-title').value = btn.dataset.title;
         document.getElementById('modal-description').value = btn.dataset.description;
+
+        const priorityLabel = {low: '🟩 Low', medium: '🟨 Medium', high: '🟥 High' }
         document.getElementById('modal-priority').value = btn.dataset.priority;
+        document.getElementById('priority-label').textContent = priorityLabel[btn.dataset.priority];
 
         document.getElementById('modal-edit-form').action = `/${pk}/update/`;
         document.getElementById('modal-comment-form').action = `/${pk}/`;
@@ -36,5 +39,20 @@ function openDeleteModal() {
     ).show();
 }
 
+function setPriority(value, label) {
+    document.getElementById('modal-priority').value = value;
+    document.getElementById('priority-label').textContent = label;
 
+}
 
+function createPriority(value, label) {
+    document.getElementById('create-priority').value = value;
+    document.getElementById('create-priority-label').textContent = label;
+
+}
+
+function createColor(value, label) {
+    document.getElementById('create-color').value = value;
+    document.getElementById('create-color-label').textContent = label;
+
+}

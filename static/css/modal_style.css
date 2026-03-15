@@ -227,3 +227,45 @@
 #folder_list {
     transition: opacity 0.3s ease;
 }
+
+/* select menus */
+
+.custom_priorety_select_btn {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    min-width: 100px;
+}
+
+.custom_priorety_select_btn_lg {
+    font-size: 18px;
+    border-radius: 12px;
+    min-width: 120px;
+}
+
+.custom_color_select_btn_lg {
+    font-size: 22px;
+    border-radius: 12px;
+    min-width: 200px;
+}
+
+
+
+.custom_priorety_select_menu {
+    border: 1px solid #dee2e6;
+    border-radius: 1px;
+    border-radius: 10px;
+    min-width: 120px;
+}
+
+.custom_priorety_select_menu_lg {
+    font-size: 18px;
+    border-radius: 12px;
+    min-width: 120px;
+}
+
+.custom_color_select_menu_lg {
+    font-size: 20px;
+    border-radius: 12px;
+    min-width: 200px;
+}

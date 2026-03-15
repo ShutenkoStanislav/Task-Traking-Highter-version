@@ -22,13 +22,19 @@
                                 style="resize: none;">
                             </textarea>
 
-                            <select name="priority" id="modal-priority"
-                                class="form-select border-0 d-inline-block w-auto py-0 ps-2 pe-4 fw-bold small"
-                                style="cursor: pointer; background-color: #e9ecef;">
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                            </select>
+                            <div class="dropdown">
+                                <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn"
+                                    type="button" id="priority-btn" data-bs-toggle="dropdown">
+                                    <span id="priority-label">🟩 Low</span>
+                                </button>
+                                <ul class="dropdown-menu shadow custom_priorety_select_menu">
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="setPriority('low', '🟩 Low')">🟩 Low</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="setPriority('medium', '🟨 Medium')">🟨 Medium</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="setPriority('high', '🟥 High')">🟥 High</a></li>
+                                </ul>
+                                <input type="hidden" name="priority" id="modal-priority" value="low">
+                            </div>
+
                         </fieldset>
                     </div>
 
