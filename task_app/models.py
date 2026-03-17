@@ -2,6 +2,63 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Workspace(models.Model):
+    INVITE_PERMISSION = [
+        ("admin", "Admin"),
+        ("member", "Member"),
+                ]
+
+    name = models.CharField(max_length=64)
+    invite_role = models.CharField(max_length=16, choices=INVITE_PERMISSION, default='member')
+    icon = models.ImageField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workspace_creator')
+
+    def __str__(self):
+        return f"{self.name} - {self.owner}"
+    
+class WorkspaceMember(models.Model):
+    MEMBER_PERMISSION = [
+        ("owner", "Owner"),
+        ("admin", "Admin"),
+        ("member", "Member"),
+                ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workspace_member')
+    role = models.CharField(max_length=16, choices=MEMBER_PERMISSION, default='member')
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('workspace', 'member')
+
+    def __str__(self):
+        return f"{self.member} - {self.role}"
+    
+    
+
+
+class Box(models.Model):
+    COLOR_VARIATION_BOX = [
+        ("#123F73", "Deep ocean"), 
+        ("#D2A1FE", "Violet"),
+        ("#33DEB8", "Aquamarine"),
+        ("#6D020E", "Red wine"),
+        ("#FCF6A7", "Sand"),
+        ("#774C06", "Terracotta"),
+        ("#000000", "Black"),
+    ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    name = models.CharField(max_length=64)
+    color = models.CharField(max_length=32, choices=COLOR_VARIATION_BOX, default="#000000")
+    created_at = models.DateTimeField(auto_now_add=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name} - {self.workspace}"
+
+
 class Folder(models.Model):
 
     COLOR_VARIATION = [
@@ -15,6 +72,7 @@ class Folder(models.Model):
     ]
     color = models.CharField(max_length=30, choices=COLOR_VARIATION, default="Black")
     name = models.CharField(max_length=16)
+    box = models.ForeignKey(Box, null=True, blank=True, on_delete=models.CASCADE, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     
@@ -51,10 +109,14 @@ class Task(models.Model):
                 null=True,
                 blank=True,
                 default=None)
+    
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, default=None)
 
     def __str__(self):
         return self.title
     
+
+        
 class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
@@ -64,7 +126,3 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return self.task.get_absolute_url()
-
-    
-
-
