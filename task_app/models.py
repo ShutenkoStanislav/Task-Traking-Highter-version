@@ -7,9 +7,15 @@ class Workspace(models.Model):
         ("admin", "Admin"),
         ("member", "Member"),
                 ]
+    WORKSPACE_SPACE = [
+        ("one", "Just me"),
+        ("two-five", "2-5"),
+        ("six-fifteen", "6-15"),
+    ]
 
     name = models.CharField(max_length=64)
     invite_role = models.CharField(max_length=16, choices=INVITE_PERMISSION, default='member')
+    workspace_space = models.CharField(max_length=16, choices=WORKSPACE_SPACE, default='one')
     icon = models.ImageField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workspace_creator')
@@ -24,7 +30,7 @@ class WorkspaceMember(models.Model):
         ("member", "Member"),
                 ]
 
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="members")
     member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workspace_member')
     role = models.CharField(max_length=16, choices=MEMBER_PERMISSION, default='member')
     joined_at = models.DateTimeField(auto_now_add=True)
