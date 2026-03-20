@@ -61,6 +61,10 @@ class TaskListView(LoginRequiredMixin, ListView):
         context["comments"] = models.Comment.objects.filter(
             task__creator=self.request.user).select_related('creator', 'task')
         
+        context['workspaces'] = models.Workspace.objects.filter(
+            members__member=self.request.user
+        )
+        
         return context
 
 class TaskDetailView(LoginRequiredMixin, DetailView):

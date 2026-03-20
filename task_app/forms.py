@@ -31,18 +31,11 @@ class TaskForm(forms.ModelForm):
             "placeholder" : "Content"
         })
 
-       
-    
-
         self.fields['priority'].widget.attrs.update({
             "class": "form-control transparent-input",
             "placeholder" : "Priority"
             
-        })
-
-        
-
-        
+        })     
 
 class FolderForm(forms.ModelForm):
     class Meta:

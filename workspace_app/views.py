@@ -5,15 +5,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 
-class WorkspaceListView(LoginRequiredMixin, ListView):
-    model = Workspace
-    context_object_name = "workspaces"
-    template_name = "workspace/workspace_list.html"
-
-    def get_queryset(self):
-        return Workspace.objects.filter(
-            members__member=self.request.user
-        )
 
 class WorkspaceDetailView(LoginRequiredMixin, DetailView):
     model = Workspace
@@ -38,7 +29,7 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
 
 class WorkspaceCreateView(LoginRequiredMixin, CreateView):
     model = Workspace
-    fields = ['name', ' workspace_space', 'invite_role']
+    fields = ['name', 'workspace_space', 'invite_role']
     template_name = "workspace/workspace_form.html"
 
     def form_valid(self, form):
