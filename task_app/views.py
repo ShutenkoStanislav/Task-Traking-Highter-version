@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from workspace_app.forms import WorkspaceForm
 
 from django.contrib.auth import login
 
@@ -64,6 +65,7 @@ class TaskListView(LoginRequiredMixin, ListView):
         context['workspaces'] = models.Workspace.objects.filter(
             members__member=self.request.user
         )
+        context['workspace_form'] = WorkspaceForm()
         
         return context
 

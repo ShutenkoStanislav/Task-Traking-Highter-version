@@ -1,0 +1,14 @@
+{% load static %}
+{% load custom_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modal_styles.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="d-flex" >
+        <div class="p-4" style="flex: 1 1 0; min-width: 0;">
+            <h2>{{workspace.name}}</h2>
+        </div>
+    </div>
+
+{% endblock %}

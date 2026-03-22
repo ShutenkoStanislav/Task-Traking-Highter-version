@@ -9,7 +9,14 @@
 <div class="d-flex">
     {% include 'includes/leftbar.html' %}
 
-    <div class="p-4" style="flex: 1 1 0; min-width: 0;">
+    <div class="p-4" style="flex: 1 1 0; min-width: 0; position: relative;">
+        <div style="position: absolute; top: 16px; right: 16px;">
+            <a class="btn" data-bs-toggle="modal" data-bs-target="#WorkspaceModal">
+                <i class="bi bi-plus-lg"></i> Add workspace
+            </a>
+        </div>
+        
+
         {% if current_folder %}
             <h2>/{{ current_folder.name }}</h2>
         {% else %}
@@ -38,6 +45,8 @@
         </div> 
     </div>
 </div>
+
+{% include 'workspace/modal_workspace_create.html' %}  
 
 {% include 'includes/modal_task_create.html' %}  
 {% include 'includes/modal_folder_create.html' %}
