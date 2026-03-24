@@ -24,6 +24,11 @@
     font-weight: 600;
 }
 
+.modal .name-input {
+    font-size: 32px;
+    font-weight: 600;
+}
+
 .modal .content-input {
     font-size: 24px;
     font-weight: 400;
@@ -225,10 +230,9 @@
 /* hide a folders */
 
 #folder_list {
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    overflow: hidden !important;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
 }
-
 #folder_list.pre-hidden {
     max-height: 0 !important;
     opacity: 0 !important;

@@ -10,7 +10,7 @@ class WorkspaceForm(forms.ModelForm):
         super(WorkspaceForm, self).__init__(*args, **kwargs)
             
         self.fields['name'].widget.attrs.update({
-            "class": "form-control noborder-input content-input",
+            "class": "form-control noborder-input name-input",
             "placeholder" : "Name"
         })
 

@@ -1,42 +1,49 @@
-<div id="leftbar" class="bg-light border-end" style="width: 22%; min-height: 100vh; position: relative;">
-    <div class="dropdown-center mb-3">
-        <button class="btn btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle"></i>  {{ user.username }}
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'tasks:profile'%}">Profile</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                {% if user.is_authenticated %}
-                    <form action="{% url 'tasks:logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="dropdown-item" style="background: none; border: none; text-align: left; width: 100%; cursor: pointer;">
-                            Log out
-                        </button>  
-                    </form>
-                {% else %}
-                        <a href="{% url 'tasks:login' %}" class="dropdown-item">Login</a>
-                {% endif %}  
-            </li>
-            <li><a class="dropdown-item" href="{% url 'tasks:register' %}">Sign in</a></li>
-        </ul>
+<div id="leftbar" class="bg-light border-end d-flex flex-column" style="width: 22%; height: 100vh; position: relative; overflow: hidden;">
+
+    <div class="flex-shrink-0">
+        <div class="dropdown-center mb-3">
+            <button class="btn btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle"></i>  {{ user.username }}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'tasks:profile'%}">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'tasks:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item" style="background: none; border: none; text-align: left; width: 100%; cursor: pointer;">
+                                Log out
+                            </button>  
+                        </form>
+                    {% else %}
+                            <a href="{% url 'tasks:login' %}" class="dropdown-item">Login</a>
+                    {% endif %}  
+                </li>
+                <li><a class="dropdown-item" href="{% url 'tasks:register' %}">Sign in</a></li>
+            </ul>
+        </div>
+
+        <div class="d-flex flex-column align-items-start gap-3 ps-2">
+            <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#TaskModal">
+                <i class="bi bi-plus-circle-fill"></i> Add task
+            </a>
+            <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#FolderModal">
+                <i class="bi bi-plus-circle-fill"></i> Add folder
+            </a>
+            <a class="btn btn-lg" href="{% url 'tasks:task_list' %}">
+                <i class="bi bi-calendar-fill"></i> Today
+            </a>
+        </div>
     </div>
 
-    <div class="d-flex flex-column align-items-start gap-3">
-        <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#TaskModal">
-            <i class="bi bi-plus-circle-fill"></i> Add task
-        </a>
-        <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#FolderModal">
-            <i class="bi bi-plus-circle-fill"></i> Add folder
-        </a>
-        <a class="btn btn-lg" href="{% url 'tasks:task_list' %}">
-            <i class="bi bi-calendar-fill"></i> Today
-        </a>
+    <div class="ps-2 mt-2">
         <h2 id="folders-toggle" style="cursor: pointer; user-select: none;">
             My tasks <span id="folders-arrow" class="bi bi-caret-up-fill" style="font-size: 16px;"></span>
         </h2>
     </div>
-    <div id="folder_list" data-simplebar style="max-height: 500px; overflow-x: hidden;">
+                  
+    <div id="folder_list" style="max-height: 300px; overflow-y: auto; overflow-x: hidden;">
         <div class="d-flex flex-column align-items-start gap-3 ps-4">
             {% for folder in folders %}
                 <div class="folder-row d-flex align-items-center justify-content-between p-2 rounded">
@@ -55,6 +62,22 @@
                 </div>
             {% endfor %}
         </div>
+    </div>
+
+    <div id="workspace_list" style="flex: 1 1 0; min-height: 0; overflow-y: auto; overflow-x: hidden;">   
+        <div class="d-flex flex-column align-items-start gap-3 ps-0">
+            {% for workspace in workspaces %}
+                <div class="folder-row d-flex align-items-center justify-content-between p-2 rounded">
+                    <a
+                    href="{% url 'workspace:workspace_detail' workspace.pk %}"
+                    class="btn btn-lg ps-0"
+                    style="font-size: 32px; font-weight: 600;"
+                    >
+                    {{ workspace.name }}  <i class="bi bi-people"></i>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>   
     </div>
 
     <div id="leftbar-resizer" 

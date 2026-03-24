@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
 
@@ -5,9 +6,10 @@
 <link rel="stylesheet" href="{% static 'css/modal_styles.css' %}">
 {% endblock %}
 {% block content %}
-    <div class="d-flex" >
+    <div class="d-flex">
+        {% include 'includes/leftbar.html' %}
         <div class="p-4" style="flex: 1 1 0; min-width: 0;">
-            <h2>{{workspace.name}}</h2>
+            <h1><i class="bi bi-people"></i> {{workspace.name}}</h1>
         </div>
     </div>
 

@@ -7,28 +7,40 @@ const folder_Arrow = document.getElementById('folders-arrow')
 
 let isDragging = false;
 
-let isOpen = true;
+
+const savedFoldersState = localStorage.getItem('folderOpen');
+let isOpen = savedFoldersState !== 'false';
 
 const saveWidth = localStorage.getItem('leftbarWidth');
 if (saveWidth) leftbar.style.width = saveWidth;
 
-const saveHide = localStorage.getItem('folderOpen');
-if (saveHide === 'false') {
-    folder_list.style.maxHeight = '0';
+
+if (!isOpen) {
+    folder_list.style.display = 'none';
     folder_list.style.opacity = '0';
     folder_Arrow.className = 'bi bi-caret-down-fill';
-    isOpen = false;
+    
+} else {
+    folder_list.style.display = '';
+    folder_list.style.opacity = '1';
+    folder_list.style.maxHeight = '300px';
+    folder_Arrow.className = 'bi bi-caret-up-fill';
 }
 
 folders_toggle.addEventListener('click', function() {
     if (isOpen) {
-        folder_list.style.maxHeight = '0';
         folder_list.style.opacity = '0';
+        setTimeout(function() {
+            folder_list.style.display = 'none';
+        }, 300);
         folder_Arrow.className = 'bi bi-caret-down-fill';
         localStorage.setItem('folderOpen', 'false');
     } else {
-        folder_list.style.maxHeight = '500px';
-        folder_list.style.opacity = '1';
+        folder_list.style.maxHeight = '300px';
+        folder_list.style.display = '';
+        setTimeout(function() {
+            folder_list.style.opacity = '1';
+        }, 10);
         folder_Arrow.className = 'bi bi-caret-up-fill';
         localStorage.setItem('folderOpen', 'true');
     }
