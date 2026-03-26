@@ -73,3 +73,13 @@ document.addEventListener('mouseup', function() {
 
 });
 
+folder_list.addEventListener('scroll', function() {
+    localStorage.setItem('folderScrollPos', folder_list.scrollTop);
+});
+
+window.addEventListener('load', function() {
+    const savedScrollPos = localStorage.getItem('folderScrollPos');
+    if (savedScrollPos) {
+        folder_list.scrollTop = parseInt(savedScrollPos);
+    }
+});

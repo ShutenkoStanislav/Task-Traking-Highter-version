@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
-from task_app.models import Workspace, WorkspaceMember, Box
+from task_app.models import Workspace, WorkspaceMember, Box, Folder
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
@@ -25,6 +25,15 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['members'] = WorkspaceMember.objects.filter(
             workspace=self.object
         ).select_related('member')
+
+        context['folders'] = Folder.objects.filter(
+            creator=self.request.user,
+            box__isnull=True
+        )
+        context['workspaces'] = Workspace.objects.filter(
+            members__member=self.request.user
+        )
+
         return context
 
 class WorkspaceCreateView(LoginRequiredMixin, CreateView):
