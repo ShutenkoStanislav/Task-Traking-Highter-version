@@ -64,7 +64,7 @@ class WorkspaceDeleteView(LoginRequiredMixin ,DeleteView):
         return Workspace.objects.filter(owner=self.request.user)
     
     def get_success_url(self):
-        return reverse_lazy('workspace:task_list')
+        return reverse_lazy('workspace:workspace_detail')
     
 
 class WorkspaceUpdateView(LoginRequiredMixin,  UpdateView):
@@ -80,5 +80,75 @@ class WorkspaceUpdateView(LoginRequiredMixin,  UpdateView):
     def get_success_url(self):
         return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.pk})
        
+
+class BoxDetailView(LoginRequiredMixin, DetailView):
+    model = Box
+    context_object_name = 'box'
+    template_name = "workspace/box_list.html"
+
+    def get_queryset(self):
+        return Box.objects.filter(
+            workspace__members__member=self.request.user
+        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['box_folders'] = Folder.objects.filter(box=self.object)
+        context['folders'] = Folder.objects.filter(
+            creator=self.request.user,
+            box__isnull=True
+        )
+        context['workspaces'] = Workspace.objects.filter(
+            members__member=self.request.user
+        )
+
+
+
+        return context
+    
+
+class BoxCreateView(LoginRequiredMixin, CreateView):
+    model = Box
+    fields = ['name','color']
+    template_name = "workspace/box_form.html"
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        form.instance.workspace = get_object_or_404(
+            Workspace,
+            pk=self.kwargs['workspace_pk'],
+            members__member=self.request.user
+        )
+        
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
+
+
+class BoxDeleteView(LoginRequiredMixin, DeleteView):
+    model = Box  
+
+    def get_queryset(self):
+        return Box.objects.filter(
+            workspace__members__member=self.request.user,
+            workspace__members__role__in=['owner', 'admin']
+        )
+    
+    def get_success_url(self):
+        return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
+
+class BoxUpdateView(LoginRequiredMixin, UpdateView):
+    model = Box
+    fields = ['name','color']
+
+    def get_queryset(self):
+        return Box.objects.filter(
+            workspace__members__member=self.request.user,
+            workspace__members__role__in=['owner', 'admin']
+        )
+    
+    def get_success_url(self):
+        return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
+
 
 # Create your views here.
