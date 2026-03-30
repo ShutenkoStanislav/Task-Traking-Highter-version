@@ -1,0 +1,47 @@
+<div class="modal fade" id="AddBoxModal" tabindex="-1" aria-labelledby="AddBoxModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="AddBoxModalLabel">Add Box</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="post" action="{% url 'workspace:box_create' workspace_pk=workspace.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label"></label>
+                        {{ box_form.name }}
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="mb-3">
+                            <label class="form-label"></label>
+                            <div class="dropdown">
+                                <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn custom_color_select_btn_lg"
+                                    type="button" data-bs-toggle="dropdown">
+                                    <span id="create-color-box-label">🔵Deep ocean</span>
+                                </button>
+                                <ul class="dropdown-menu shadow custom_priorety_select_menu custom_color_select_menu_lg">
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#123F73', '🔵Deep ocean')">🔵Deep ocean</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#D2A1FE', '🟣Violet')">🟣Violet</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#33DEB8', '🟢Aquamarine')">🟢Aquamarine</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#6D020E', '🔴Red wine')">🔴Red wine</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#ffe135', '🟡Sand')">🟡Sand</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#774C06', '🟤Terracotta')">🟤Terracotta</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColorBox('#000000', '⚫Black')">⚫Black</a></li>
+                                </ul>
+                                <input type="hidden" name="color" id="create-color-box" value="#77acc7">
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add</button>
+                </div>
+            </form>                
+        </div>
+    </div>
+</div>

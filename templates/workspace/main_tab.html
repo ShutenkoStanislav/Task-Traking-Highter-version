@@ -1,0 +1,28 @@
+<!-- {% load static %} -->
+<br>
+
+<div class="d-flex align-items-center">
+    <h5>Folders: {{ folders_count }}</h5>
+    <div class="ms-auto">
+       <div class="dropdown">
+            <button class="btn btn-sm dropdown-toggle custom_priorety_select_menu_lg"
+                type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-plus-lg"></i> Filter
+            </button>
+            <ul class="dropdown-menu shadow custom_priorety_select_menu_lg">
+                <li><a class="dropdown-item" href="#">
+                   <i class="bi bi-sort-alpha-down"></i> A-Z
+                </a>
+                </li>
+
+                <li><a class="dropdown-item" href="#">
+                    <i class="bi bi-sort-alpha-up-alt"></i> Z-A
+                </a>
+                </li>          
+            </ul>
+        </div>
+    </div>
+   
+</div>
+<hr class="m-0"> 
+

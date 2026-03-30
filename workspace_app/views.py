@@ -3,6 +3,8 @@ from django.views.generic import ListView, DetailView, CreateView, View, UpdateV
 from task_app.models import Workspace, WorkspaceMember, Box, Folder
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from workspace_app.forms import BoxForm
+from django.shortcuts import get_object_or_404
 
 
 
@@ -33,6 +35,13 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['workspaces'] = Workspace.objects.filter(
             members__member=self.request.user
         )
+        context['user_role'] = WorkspaceMember.objects.get(
+            workspace=self.object,
+            member=self.request.user
+        ).role
+
+        context["box_form"] = BoxForm()
+        context["folders_count"] = Folder.objects.filter(workspace=self.object).count()
 
         return context
 
@@ -84,7 +93,7 @@ class WorkspaceUpdateView(LoginRequiredMixin,  UpdateView):
 class BoxDetailView(LoginRequiredMixin, DetailView):
     model = Box
     context_object_name = 'box'
-    template_name = "workspace/box_list.html"
+    template_name = "workspace/main_tab.html"
 
     def get_queryset(self):
         return Box.objects.filter(
@@ -109,8 +118,16 @@ class BoxDetailView(LoginRequiredMixin, DetailView):
 class BoxCreateView(LoginRequiredMixin, CreateView):
     model = Box
     fields = ['name','color']
-    template_name = "workspace/box_form.html"
+    template_name = "workspace/modal_box_create.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['workspace'] = get_object_or_404(
+            Workspace,
+            pk=self.kwargs['workspace_pk'],
+        )
+        return context
+    
     def form_valid(self, form):
         form.instance.creator = self.request.user
         form.instance.workspace = get_object_or_404(

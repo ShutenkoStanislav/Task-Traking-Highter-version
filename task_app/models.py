@@ -46,13 +46,13 @@ class WorkspaceMember(models.Model):
 
 class Box(models.Model):
     COLOR_VARIATION_BOX = [
-        ("#123F73", "Deep ocean"), 
-        ("#D2A1FE", "Violet"),
-        ("#33DEB8", "Aquamarine"),
-        ("#6D020E", "Red wine"),
-        ("#FCF6A7", "Sand"),
-        ("#774C06", "Terracotta"),
-        ("#000000", "Black"),
+        ("#123F73", "🔵Deep ocean"), 
+        ("#D2A1FE", "🟣Violet"),
+        ("#33DEB8", "🟢Aquamarine"),
+        ("#6D020E", "🔴Red wine"),
+        ("#FCF6A7", "🟡Sand"),
+        ("#774C06", "🟤Terracotta"),
+        ("#000000", "⚫Black"),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
@@ -81,6 +81,7 @@ class Folder(models.Model):
     box = models.ForeignKey(Box, null=True, blank=True, on_delete=models.CASCADE, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, default=None)
     
   
 

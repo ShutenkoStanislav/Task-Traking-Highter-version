@@ -72,3 +72,9 @@ function createColor(value, label) {
     document.getElementById('create-color-label').textContent = label;
 
 }
+
+function createColorBox(value, label) {
+    document.getElementById('create-color-box').value = value;
+    document.getElementById('create-color-box-label').textContent = label;
+
+}
