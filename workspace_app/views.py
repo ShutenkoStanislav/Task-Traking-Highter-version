@@ -23,7 +23,7 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['tab'] = self.request.GET.get('tab', 'main')
         context['boxes'] = Box.objects.filter(
             workspace=self.object
-            ).prefetch_related('folders')
+        ).prefetch_related('folder_set')
         context['members'] = WorkspaceMember.objects.filter(
             workspace=self.object
         ).select_related('member')
