@@ -1,6 +1,6 @@
 <div class="modal fade" id="universalTaskModal" tabindex="-1" aria-labelledby="editModalLabel{{ task.pk }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content overflow-hidden">
+        <div class="modal-content overflow-hidden custom_modal_shadow">
             
             <form id="modal-edit-form" action="" method="post">  
                 {% csrf_token %}
@@ -23,7 +23,7 @@
                             </textarea>
 
                             <div class="dropdown">
-                                <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn"
+                                <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn shadow_custom_dropdown"
                                     type="button" id="priority-btn" data-bs-toggle="dropdown">
                                     <span id="priority-label">🟩 Low</span>
                                 </button>

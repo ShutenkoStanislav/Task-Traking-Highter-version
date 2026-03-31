@@ -9,7 +9,7 @@ class TaskForm(forms.ModelForm):
         fields = ["title", "description", "priority", "due_date", "folder"] 
         widgets = {
             'due_date': forms.DateInput(attrs={
-                "class": "form-control transparent-input",
+                "class": "form-control minimalist-date-input",
                 "placeholder" : "Date",
                 "type": "date"
             })
