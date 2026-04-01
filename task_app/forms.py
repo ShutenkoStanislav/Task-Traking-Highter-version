@@ -8,12 +8,13 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["title", "description", "priority", "due_date", "folder"] 
         widgets = {
-            'due_date': forms.DateInput(attrs={
-                "class": "form-control minimalist-date-input",
-                "placeholder" : "Date",
-                "type": "date"
+            'due_date': forms.TextInput(attrs={
+            'class': 'form-control minimalist-date-picker', 
+            'placeholder': 'Select Due date',
+            'autocomplete': 'off' 
             })
         }
+        
     def __init__(self, *args, **kwargs):
         current_folder = kwargs.pop('current_folder', None)
         super(TaskForm, self).__init__(*args, **kwargs)
