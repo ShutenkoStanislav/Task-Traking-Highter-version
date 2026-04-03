@@ -4,7 +4,7 @@ from task_app.models import Workspace, WorkspaceMember, Box, Folder
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from workspace_app.forms import BoxForm
-from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect ,get_object_or_404
 
 
 
@@ -166,6 +166,25 @@ class BoxUpdateView(LoginRequiredMixin, UpdateView):
     
     def get_success_url(self):
         return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
+
+
+def folder_create_view(request):
+    if request.method == "POST":
+        name=request.POST.get("name")
+        box_id = request.POST.get("box_id")
+        box = get_object_or_404(Box, pk=box_id)
+
+        Folder.objects.create(
+            name=name,
+            box=box,
+            workspace=box.workspace,
+            creator=request.user,
+            color="#77acc7"
+        )
+
+        return redirect('workspace:workspace_detail', pk=box.workspace.pk)
+    
+    return redirect('workspace:workspace_detail')
 
 
 # Create your views here.

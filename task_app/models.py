@@ -57,7 +57,7 @@ class Box(models.Model):
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     name = models.CharField(max_length=24)
-    color = models.CharField(max_length=32, choices=COLOR_VARIATION_BOX, default="Deep ocean")
+    color = models.CharField(max_length=32, choices=COLOR_VARIATION_BOX, default="#123F73")
     created_at = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
 

@@ -25,12 +25,49 @@
    
 </div>
 <hr class="m-0"> 
-<div style="max-height: 500px; overflow-y: auto; overflow-x: hidden;">
+<div style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
     {% for box in boxes %}
-        <div class="d-flex, align-items-center p-3 border-bottom">
-            <h2 class="ms-3 mb-0"><i class="bi bi-box2-fill" style="font-size: 38px; color: {{ box.color }};"></i> {{ box.name }}</h2>
+        <div class="d-flex align-items-center p-3 border-bottom">
+            <p class="ms-3 mb-0" style="font-size: 1.7rem; font-weight: bold;">
+                <i class="bi bi-box2-fill" style="font-size: 2.5rem; color: {{ box.color }};"></i> 
+                {{ box.name }}
+            </p>
+
+            <div class="dropdown ms-auto">
+                <button class="btn btn-sm dropdown-toggle custom_priorety_select_menu_lg"
+                    type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-patch-plus" style="font-size: 1.5rem;"></i>
+                </button>
+                <ul class="dropdown-menu shadow custom_priorety_select_menu_lg">
+                    <li>
+                        <a  href="#"
+                            class="dropdown-item" 
+                            data-bs-toggle="modal"
+                            data-bs-target="#FolderModal-{{ box.pk }}"> 
+                        
+                            <i class="bi bi-plus-circle-fill"></i> Add folder
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#">
+                            <i class="bi bi-pencil-fill text-success"></i> Edit
+                        </a>
+                    </li>
+                    <li>
+                        <a  href="#"
+                            class="dropdown-item text-danger" 
+                            data-bs-toggle="modal"
+                            data-bs-target="#DeleteBoxModal-{{ box.pk }}">
+                            <i class="bi bi-trash-fill"></i> Delete
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
+        {% include 'workspace/modal_box_folder.html' with box=box %}
+        {% include 'workspace/modal_delete_box.html' with box=box %}
     {% empty %}
         <p class="text-muted text-center mt-4">No boxes yet</p>
-    {% endfor%}
+    {% endfor %}
 </div>
+
