@@ -15,6 +15,6 @@ urlpatterns = [
     path('box/<int:pk>/delete/', views.BoxDeleteView.as_view(), name="box_delete"),
     path('box/<int:pk>/update/', views.BoxUpdateView.as_view(), name="box_update"),
 
-    path('folder/create/', task_view.FolderCreateView.as_view(), name='workspace-folder'),
-    path('workspace/<int:pk>/folder/<int:folder_id>/', task_view.TaskListView.as_view(), name='workspace-folder'),
+    path('folder/create/', views.folder_create_view, name='folder-create'),
+    path('workspace/<int:pk>/folder/<int:folder_id>/', task_view.TaskListView.as_view(), name='folder-detail'),
 ]

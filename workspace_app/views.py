@@ -171,20 +171,25 @@ class BoxUpdateView(LoginRequiredMixin, UpdateView):
 def folder_create_view(request):
     if request.method == "POST":
         name=request.POST.get("name")
+        color = request.POST.get("color", '#77acc7')
         box_id = request.POST.get("box_id")
-        box = get_object_or_404(Box, pk=box_id)
+        
+        if box_id:
+            box = get_object_or_404(Box, pk=box_id)
 
-        Folder.objects.create(
-            name=name,
-            box=box,
-            workspace=box.workspace,
-            creator=request.user,
-            color="#77acc7"
-        )
+            if not box.workspace.members.filter(pk=request.user.pk).exists():
+                return redirect('tasks:task_list')
 
-        return redirect('workspace:workspace_detail', pk=box.workspace.pk)
+            if name:
+
+                Folder.objects.create(
+                    name=name,
+                    box=box,
+                    workspace=box.workspace,
+                    creator=request.user,
+                    color=color
+                )
+
+            return redirect('workspace:workspace_detail', pk=box.workspace.pk)
     
-    return redirect('workspace:workspace_detail')
-
-
-# Create your views here.
+    return redirect('tasks:task_list')

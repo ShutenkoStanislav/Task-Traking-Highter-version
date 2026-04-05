@@ -1,4 +1,4 @@
-<div class="modal fade" id="Box-FolderModal-{{ box.pk }}" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="FolderModal-{{ box.pk }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content custom_modal_shadow">
             <div class="modal-header">
@@ -6,12 +6,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="post" action="{% url 'tasks:folder-create' %}">
+            <form method="post" action="{% url 'workspace:folder-create' %}">
                 <div class="modal-body">
                     {% csrf_token %}
+                    <input type="hidden" name="box_id" value="{{ box.pk }}">
                     <div class="mb-3">
                         <label class="form-label"></label>
-                        {{ folder_form.name }}
+                        <input type="text" 
+                            name="name" 
+                            class="form-control noborder-input content-input" 
+                            placeholder="Name" 
+                            required>
                     </div>
                     <br>
                     <div class="row">
@@ -23,13 +28,13 @@
                                     <span id="create-color-label">🔵Air blue</span>
                                 </button>
                                 <ul class="dropdown-menu shadow custom_priorety_select_menu custom_color_select_menu_lg">
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#77acc7', '🔵Air blue')">🔵Air blue</a></li>
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#9966cc', '🟣Amethust')">🟣Amethust</a></li>
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#008000', '🟢Apple green')">🟢Apple green</a></li>
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#ff033e', '🔴Red rose')">🔴Red rose</a></li>
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#ffe135', '🟡Banana yellow')">🟡Banana yellow</a></li>
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#ff6500', '🟠Sunset')">🟠Sunset</a></li>
-                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#000000', '⚫Black')">⚫Black</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#77acc7', '🔵Air blue', this)">🔵Air blue</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#9966cc', '🟣Amethust', this)">🟣Amethust</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#008000', '🟢Apple green', this)">🟢Apple green</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#ff033e', '🔴Red rose', this)">🔴Red rose</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#ffe135', '🟡Banana yellow', this)">🟡Banana yellow</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#ff6500', '🟠Sunset', this)">🟠Sunset</a></li>
+                                    <li><a class="dropdown-item rounded-3" href="#" onclick="createColor('#000000', '⚫Black', this)">⚫Black</a></li>
                                 </ul>
                                 <input type="hidden" name="color" id="create-color" value="#77acc7">
                             </div>

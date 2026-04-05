@@ -125,14 +125,16 @@ class FolderCreateView(LoginRequiredMixin, CreateView):
     context_object_name = "folders"
     success_url = reverse_lazy('tasks:task_list')
     template_name = "tasks/folder_form.html"
-    fields = ['name', 'color']
     form_class = FolderForm
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
         box_id = self.request.POST.get('box_id')
         if box_id:
-            form.instance.box_id = box_id
+            box = get_object_or_404(models.Box, pk=box_id)
+            form.instance.box = box
+            form.instance.workspace = box.workspace
+            self.success_url = reverse_lazy('workspace:workspace_detail', kwargs={'pk': box.workspace.pk})
             
         return super().form_valid(form)
 

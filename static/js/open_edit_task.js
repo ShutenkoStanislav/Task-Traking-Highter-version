@@ -67,14 +67,19 @@ function createPriority(value, label) {
 
 }
 
-function createColor(value, label) {
-    document.getElementById('create-color').value = value;
-    document.getElementById('create-color-label').textContent = label;
-
-}
-
 function createColorBox(value, label) {
     document.getElementById('create-color-box').value = value;
     document.getElementById('create-color-box-label').textContent = label;
+}
 
+
+function createColor(value, label, element) {
+    const modal = element.closest('.modal-content')
+    const input = modal.querySelector('input[name="color"]')
+    const labelSpan = modal.querySelector('.dropdown-toggle span')
+       
+
+    if (input) input.value = value;
+    if (labelSpan) labelSpan.textContent = label;
+   
 }
