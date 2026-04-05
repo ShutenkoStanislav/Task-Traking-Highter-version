@@ -23,7 +23,7 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['tab'] = self.request.GET.get('tab', 'main')
         context['boxes'] = Box.objects.filter(
             workspace=self.object
-        ).prefetch_related('folder_set')
+        ).prefetch_related('folders')
         context['members'] = WorkspaceMember.objects.filter(
             workspace=self.object
         ).select_related('member')
@@ -177,11 +177,13 @@ def folder_create_view(request):
         if box_id:
             box = get_object_or_404(Box, pk=box_id)
 
-            if not box.workspace.members.filter(pk=request.user.pk).exists():
+            is_member = box.workspace.members.filter(member=request.user).exists()
+            is_owner = box.workspace.owner == request.user
+
+            if not is_member and not is_owner:
                 return redirect('tasks:task_list')
 
             if name:
-
                 Folder.objects.create(
                     name=name,
                     box=box,

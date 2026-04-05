@@ -76,9 +76,9 @@ class Folder(models.Model):
         ("#ff6500", "🟠Sunset"),
         ("#000000", "⚫Black"),
     ]
-    color = models.CharField(max_length=30, choices=COLOR_VARIATION, default="Black")
+    color = models.CharField(max_length=30, choices=COLOR_VARIATION, default="#77acc7")
     name = models.CharField(max_length=16)
-    box = models.ForeignKey(Box, null=True, blank=True, on_delete=models.CASCADE, default=None)
+    box = models.ForeignKey(Box, null=True, blank=True, on_delete=models.CASCADE, default=None, related_name='folders')
     created_at = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, default=None)
