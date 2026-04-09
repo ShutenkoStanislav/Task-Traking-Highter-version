@@ -25,10 +25,16 @@
         </div>
 
         <div class="d-flex flex-column align-items-start gap-3 ps-2">
-            <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#TaskModal">
+            <a class="btn btn-lg" 
+                data-bs-toggle="modal"
+                data-bs-target="#TaskModal"
+                data-workspace-id="{{ workspace.pk }}">
                 <i class="bi bi-plus-circle-fill"></i> Add task
             </a>
-            <a class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#FolderModal">
+            <a class="btn btn-lg" 
+                data-bs-toggle="modal" 
+                data-bs-target="#FolderModal"
+                data-workspace-id="{{ workspace.pk }}">
                 <i class="bi bi-plus-circle-fill"></i> Add folder
             </a>
             <a class="btn btn-lg" href="{% url 'tasks:task_list' %}">

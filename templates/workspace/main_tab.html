@@ -24,10 +24,10 @@
     </div>
    
 </div>
-<hr class="m-0"> 
+<hr class="m-0">
 <div style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
     {% for box in boxes %}
-        <div class="d-flex align-items-center p-3 border-bottom" style="cursor: pointer; user-select: none;" onclick="toggleBox({{ box.pk }})">
+        <div class="d-flex align-items-center p-3" style="cursor: pointer; user-select: none;" onclick="toggleBox({{ box.pk }})">
             
             <i id="box-arrow-{{ box.pk }}" class="bi bi-caret-up-fill ms-2"></i>
 
