@@ -58,24 +58,29 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
 
         return context
 
-class WorkspaceCreateView(LoginRequiredMixin, CreateView):
-    model = Workspace
-    fields = ['name', 'workspace_space', 'invite_role']
-    template_name = "workspace/workspace_form.html"
 
-    def form_valid(self, form):
-        form.instance.owner = self.request.user
-        response = super().form_valid(form)
+def workspace_create_view(request):
+    if request.method == "POST":
+        name = request.POST.get("workspace_name")
+        workspace_space = request.POST.get("workspace_space")
+        invite_role = request.POST.get("invite_role")
 
-        WorkspaceMember.objects.create(
-            workspace=self.object,
-            member=self.request.user,
-            role="owner"
-        )
-        return response
-    
-    def get_success_url(self):
-        return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.pk})
+        if name:
+            workspace = Workspace.objects.create(
+                name=name,
+                workspace_space=workspace_space,
+                invite_role=invite_role,
+                owner=request.user
+            )
+            WorkspaceMember.objects.create(
+                workspace=workspace,
+                member=request.user,
+                role="owner"
+            )
+            return redirect('workspace:workspace_detail', pk=workspace.pk)
+    return redirect('tasks:task_list')
+
+
 
     
 
@@ -185,9 +190,10 @@ def folder_create_view(request):
     if request.method == "POST":
         name=request.POST.get("name")
         color = request.POST.get("color", '#77acc7')
-        box_id = request.POST.get("box_id")
+        box_id = request.POST.get("box_id")  
         
         if box_id:
+            
             box = get_object_or_404(Box, pk=box_id)
 
             is_member = box.workspace.members.filter(member=request.user).exists()
@@ -206,5 +212,14 @@ def folder_create_view(request):
                 )
 
             return redirect('workspace:workspace_detail', pk=box.workspace.pk)
+        else:
+          
+            if name:   
+                Folder.objects.create(
+                    name=name,
+                    creator=request.user,
+                    color=color
+                )       
+            return redirect('tasks:task_list')
     
     return redirect('tasks:task_list')

@@ -74,14 +74,16 @@
                 <p>Members contetn</p>
             {% elif tab == 'activity' %}
                 <p>Activity content</p>
-            {% endif %}
-            
+            {% endif %}   
         </div>
     </div>
 
-    
+    {% include 'includes/modal_task_create.html' %}
+    {% include 'includes/modal_folder_create.html' %}
+
+    <script>
+        var WORKSPACE_BOXES = {{ boxes_json|safe }};
+    </script>
+   
 {% endblock %}
 
-<script>
-    const WORKSPACE_BOXES = {{ boxe_json|safe }};
-</script>

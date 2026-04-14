@@ -10,7 +10,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/modal_style.css'%}">
+</head>
+<body>
+
+    {% block content %}
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
     <script>
+
         if (localStorage.getItem('folderOpen') === 'false') {
             document.addEventListener('DOMContentLoaded', function() {
                 const fl = document.getElementById('folder_list');
@@ -20,7 +31,7 @@
                 }
             });
         }
-        
+
         document.addEventListener('DOMContentLoaded', function() {
         flatpickr(".minimalist-date-picker", {
             altInput: true,
@@ -29,20 +40,9 @@
             static: true 
             });
         });
-
-        const WORKSPACE_BOXES = [];
-
     </script>
-</head>
-<body>
-
-    {% block content %}
-    {% endblock %}
 
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     
     {% block extra_js %}
     <script src="{% static 'js/task_complete.js' %}"></script>
@@ -51,6 +51,7 @@
     <script src="{% static 'js/flex_leftbar.js' %}"></script>
     <script src="{% static 'js/workspace_create.js' %}"></script>
     <script src="{% static 'js/box_toggle.js' %}"></script>
+    <script src="{% static 'js/workspace_modal.js' %}"></script>
     {% endblock %}
 
 </body>

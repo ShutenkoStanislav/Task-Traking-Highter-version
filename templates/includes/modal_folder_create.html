@@ -6,12 +6,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="post" action="{% url 'tasks:folder-create' %}">
+            <form method="post" action="{% url 'workspace:folder-create' %}">
                 <div class="modal-body">
                     {% csrf_token %}
+
+                    <input type="hidden" name="box_id" id="folder-modal-box-id" value="">
+
                     <div class="mb-3">
-                        <label class="form-label"></label>
-                        {{ folder_form.name }}
+                        <input  type="text"
+                                name="name"
+                                class="form-control noborder-input content-input"
+                                placeholder="Folder name"
+                                required>
                     </div>
 
                     <div class="mb-3 d-none" id="folder-box-select-wrapper">
@@ -53,3 +59,4 @@
         </div>
     </div>
 </div>
+
