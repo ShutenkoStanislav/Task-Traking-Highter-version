@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from workspace_app.forms import BoxForm
 from django.shortcuts import redirect ,get_object_or_404
+from task_app.forms import TaskForm, FolderForm
 import json
 
 
@@ -43,6 +44,9 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
 
         context["box_form"] = BoxForm()
         context["folders_count"] = Folder.objects.filter(workspace=self.object).count()
+
+        context['task_form'] = TaskForm()
+        context['folder_form'] = FolderForm()
 
         boxes_data = []
         for box in context['boxes']:

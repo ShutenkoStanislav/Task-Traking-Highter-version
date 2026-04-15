@@ -296,6 +296,12 @@
     min-width: 200px;
 }
 
+.custom_box_select_btn_lg {
+    font-size: 22px;
+    border-radius: 10px;
+    min-width: 100px;
+}
+
 
 
 .custom_priorety_select_menu {
