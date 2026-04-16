@@ -1,67 +1,82 @@
 document.addEventListener('show.bs.modal', function(event) {
     const trigger = event.relatedTarget;
+    const modal = event.target;
+    const modalId = modal.id;
+    const isWorkspace = trigger && trigger.dataset.workspaceId;
+    const boxes = window.WORKSPACE_BOXES || [];
+
     
+    if (modalId === 'FolderModal') {
+        const folderBoxWrapper = document.getElementById('folder-box-select-wrapper');
+        const folderNameWrap = document.getElementById('folder-name-wrap');
+        const colorBtn = document.getElementById('folder-color-btn');
+        const brSeparator = document.getElementById('folder-br-separator');
+        const modalBody = modal.querySelector('.modal-body');
+
+        if (!isWorkspace) {
+            folderBoxWrapper?.classList.add('d-none');
+
+            if (folderNameWrap) folderNameWrap.style.width = '100%';
+            if (brSeparator) brSeparator.style.display = 'block';
+            colorBtn?.classList.replace('custom_workspace_btn_style', 'custom_color_select_btn_lg');
+            modalBody?.classList.remove('compact-workspace-mode');
+        } else {
+            folderBoxWrapper?.classList.remove('d-none');
+            if (folderNameWrap) folderNameWrap.style.width = '50%';
+            if (brSeparator) brSeparator.style.display = 'none';
+            colorBtn?.classList.replace('custom_color_select_btn_lg', 'custom_workspace_btn_style');
+            modalBody?.classList.add('compact-workspace-mode');
+
+          
+            const folderBoxDropdown = document.getElementById('folder-box-dropdown');
+    
+            if (folderBoxDropdown) {
+                folderBoxDropdown.innerHTML = boxes.map(box => `
+                    <li>
+                        <a class="dropdown-item rounded-3" href="#"
+                            onclick="selectFolderBox(${box.id}, '${box.name}')">
+                            ${box.name}
+                        </a>
+                    </li>
+                    `).join('');
+                
+            }
+        }
+        return; 
+    }
 
     
     const taskFields = document.getElementById('task-workspace-fields');
-    const folderBoxWrapper = document.getElementById('folder-box-select-wrapper');
     const titleDiv = document.getElementById('task-title-wrap');
     const contDiv = document.getElementById('task-cont-wrap');
 
-
-    if ( !trigger || !trigger.dataset.workspaceId) {
-        folderBoxWrapper?.classList.add('d-none');
+    if (!isWorkspace) {
         taskFields?.classList.add('d-none');
         if (titleDiv) titleDiv.style.width = '100%';
         if (contDiv) contDiv.style.width = '100%';
-        return;
+    } else {
+        if (titleDiv) titleDiv.style.width = '50%';
+        if (contDiv) contDiv.style.width = '50%';
 
+        if (taskFields) {
+            taskFields.classList.remove('d-none');
+            taskFields.classList.add('d-flex');
+
+            const boxDropdown = document.getElementById('task-box-dropdown');
+            if (boxDropdown) {
+                boxDropdown.innerHTML = boxes.map(box => `
+                    <li>
+                        <a class="dropdown-item rounded-3" href="#" onclick="selectTaskBox(${box.id}, '${box.name}')">
+                            ${box.name}
+                        </a>
+                    </li>
+                `).join('');
+            }
+            window._taskBoxes = boxes;
+        }
     }
-
-    const boxes = window.WORKSPACE_BOXES || [];
-
-    if (titleDiv) titleDiv.style.width = '50%';
-    if (contDiv) contDiv.style.width = '50%';
-
-
-
-    if (folderBoxWrapper) {
-        folderBoxWrapper.classList.remove('d-none');
-        const folderBoxSelect = document.getElementById('folder-box-select')
-        const folderBoxId = document.getElementById('folder-modal-box-id');
-        folderBoxSelect.innerHTML = '<option value="">Box</option>';
-        boxes.forEach(box => {
-            folderBoxSelect.innerHTML += `<option value="${box.id}">${box.name}</option>`;
-        });
-        folderBoxSelect.onchange = () => folderBoxId.value = folderBoxSelect.value;
-    }
-
-    
-
-    if (taskFields) {
-        taskFields.classList.remove('d-none');
-        taskFields.classList.add('d-flex');
-
-        const boxDropdown = document.getElementById('task-box-dropdown');
-        const folderDropdown = document.getElementById('task-folder-dropdown');
-        const folderBtn = document.getElementById('task-folder-btn');
-        const folderLabel = document.getElementById('task-folder-label');
-
-        boxDropdown.innerHTML = '';
-        boxes.forEach(box => {
-            boxDropdown.innerHTML += `
-            <li>
-                    <a class="dropdown-item rounded-3" href="#" 
-                       onclick="selectTaskBox(${box.id}, '${box.name}')">
-                        ${box.name}
-                    </a>
-                </li>`;
-        });
-
-        window._taskBoxes = boxes;      
-    }
-
 });
+
 
 function selectTaskBox(boxId, boxName) {
     document.getElementById('task-box-label').textContent = boxName;
@@ -79,23 +94,24 @@ function selectTaskBox(boxId, boxName) {
 
     if (selectedBox && selectedBox.folders.length > 0) {
         folderBtn.disabled = false;
-        selectedBox.folders.forEach(f => {
-            folderDropdown.innerHTML += `
-                <li>
-                    <a class="dropdown-item rounded-3" href="#"
-                       onclick="selectTaskFolder(${f.id}, '${f.name}')">
-                        ${f.name}
-                    </a>
-                </li>
-            `;
-        });
+        folderDropdown.innerHTML = selectedBox.folders.map(f => `
+            <li>
+                <a class="dropdown-item rounded-3" href="#" onclick="selectTaskFolder(${f.id}, '${f.name}')">
+                    ${f.name}
+                </a>
+            </li>
+        `).join('');
     } else {
         folderBtn.disabled = true;
     }
-
 }
 
 function selectTaskFolder(folderId, folderName) {
     document.getElementById('task-folder-label').textContent = folderName;
     document.getElementById('task-folder-hidden').value = folderId;
+}
+
+function selectFolderBox(boxId, boxName) {
+    document.getElementById('folder-box-label').textContent = boxName;
+    document.getElementById('folder-modal-box-id').value = boxId;
 }

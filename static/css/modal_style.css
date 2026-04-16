@@ -285,9 +285,10 @@
 }
 
 .custom_color_select_btn_lg {
-    font-size: 22px;
-    border-radius: 12px;
-    min-width: 200px;
+    font-size: 22px !important; 
+    min-width: 200px !important;
+    padding: 10px 15px !important; 
+    line-height: 1.2 !important;
 }
 
 .custom_workspace_select_btn_lg {
@@ -404,4 +405,25 @@
     color: #000 !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
     transform: scale(1.02);
+}
+
+
+/* left-bar folder create workspace */
+
+.compact-workspace-mode {
+    padding-top: 15px !important;
+}
+
+.compact-workspace-mode br {
+    display: none;
+}
+
+.compact-workspace-mode .gap-5 {
+    gap: 1.5rem !important;
+}
+
+.custom_workspace_btn_style {
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    padding: 5px 10px;
 }
