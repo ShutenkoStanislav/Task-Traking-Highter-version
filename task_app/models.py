@@ -1,24 +1,60 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class Workspace(models.Model):
     INVITE_PERMISSION = [
-        ("admin", "Admin"),
-        ("member", "Member"),
+        ("owner_only", "Only owner"),
+        ("owner_admin", "Owner & Admin"),
                 ]
     WORKSPACE_SPACE = [
         ("one", "Just me"),
-        ("two-five", "2-5"),
-        ("six-fifteen", "6-15"),
+        ("two_five", "Group (2-5)"),
+        ("six_fifteen", "Team (6-15)"),
     ]
 
+    SPACE_LIMITS = {
+        "one": 1,
+        "two_five": 5,
+        "six_fifteen": 15,
+    }
+
     name = models.CharField(max_length=64)
-    invite_role = models.CharField(max_length=16, choices=INVITE_PERMISSION, default='member')
+    invite_role = models.CharField(max_length=16,
+                                choices=INVITE_PERMISSION,
+                                default='owner_admin')
     workspace_space = models.CharField(max_length=16, choices=WORKSPACE_SPACE, default='one')
     icon = models.ImageField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workspace_creator')
+    owner = models.ForeignKey(User,
+                            on_delete=models.CASCADE,
+                            related_name='workspace_creator')
+    
+
+    def get_member_limit(self):
+        return self.SPACE_LIMITS.get(self.workspace_space, 1)
+    
+    def get_active_member_count(self):
+        return self.members.filter(is_active=True).count()
+
+    def has_space(self):
+        return self.get_active_member_count() < self.get_member_limit() 
+
+    def get_admin_count(self):
+        return self.members.filter(role='admin', is_active=True).count()
+
+    def can_user_invite(self, user):
+        try:
+            membership = self.members.get(member=user, is_active=True)
+        except WorkspaceMember.DoesNotExist:
+            return False
+        
+        if membership.role == 'owner':
+            return True
+        if membership.role == 'admin' and self.invite_role == 'owner_admin':
+            return True
+        return False
 
     def __str__(self):
         return f"{self.name} - {self.owner}"
@@ -30,13 +66,35 @@ class WorkspaceMember(models.Model):
         ("member", "Member"),
                 ]
 
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="members")
-    member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workspace_member')
+    workspace = models.ForeignKey(Workspace,
+                                on_delete=models.CASCADE, 
+                                related_name="members")
+    member = models.ForeignKey(User,
+                                on_delete=models.CASCADE,
+                                related_name='workspace_member')
     role = models.CharField(max_length=16, choices=MEMBER_PERMISSION, default='member')
     joined_at = models.DateTimeField(auto_now_add=True)
 
+    is_active = models.BooleanField(
+        default=True
+    )
+
     class Meta:
         unique_together = ('workspace', 'member')
+
+    def clean(self):
+        if self.role == 'admin':
+            admin_qs = WorkspaceMember.object.filter(
+                workspace=self.workspace,
+                role='admin',
+                is_active = True
+            ).exclude(pk=self.pk)
+
+            if admin_qs.count() >= 4:
+                raise ValidationError("Workspace limited to 4 admins maximum")
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.member} - {self.role}"

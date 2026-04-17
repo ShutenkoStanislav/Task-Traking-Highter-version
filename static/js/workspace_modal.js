@@ -18,13 +18,13 @@ document.addEventListener('show.bs.modal', function(event) {
 
             if (folderNameWrap) folderNameWrap.style.width = '100%';
             if (brSeparator) brSeparator.style.display = 'block';
-            colorBtn?.classList.replace('custom_workspace_btn_style', 'custom_color_select_btn_lg');
+            colorBtn?.classList.replace('custom_color_select_btn_lg', 'custom_workspace_btn_style');
             modalBody?.classList.remove('compact-workspace-mode');
         } else {
             folderBoxWrapper?.classList.remove('d-none');
             if (folderNameWrap) folderNameWrap.style.width = '50%';
             if (brSeparator) brSeparator.style.display = 'none';
-            colorBtn?.classList.replace('custom_color_select_btn_lg', 'custom_workspace_btn_style');
+            colorBtn?.classList.replace('custom_workspace_btn_style', 'custom_color_select_btn_lg');
             modalBody?.classList.add('compact-workspace-mode');
 
           
