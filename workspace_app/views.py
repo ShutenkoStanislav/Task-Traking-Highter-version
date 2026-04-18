@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
-from task_app.models import Workspace, WorkspaceMember, Box, Folder
+from task_app.models import Workspace, WorkspaceMember, Box, Folder, WorkspaceInvite
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from workspace_app.forms import BoxForm
 from django.shortcuts import redirect ,get_object_or_404
 from task_app.forms import TaskForm, FolderForm
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 import json
 
 
@@ -227,3 +229,77 @@ def folder_create_view(request):
             return redirect('tasks:task_list')
     
     return redirect('tasks:task_list')
+
+#Invites
+
+@login_required
+
+def sended_invite(request, worksapce_pk):
+    if request.method != "POST":
+        return JsonResponse({'error': "Method don't allowed"}, status=405)
+    
+    workspace = get_object_or_404(
+        Workspace,
+        pk=worksapce_pk,
+        members__member=request.user
+    )
+
+    if not workspace.can_user_invite(request.user):
+        return JsonResponse({'error': "You don't have permission for invites"}, status=403)
+    if not workspace.has_space():
+        return JsonResponse({'error': f'Workspace reach the space limit ({workspace.get_member_limit()})'}, status=400)
+    
+    data = json.loads(request.body)
+    email = data.get('email', '').strip()
+    role = data.get('role', 'member')
+
+    if not email:
+        return JsonResponse({'error':'Email required'})
+    
+    if role not in ('member', 'admin'):
+        return JsonResponse({'error':'Invalid role'}, status=400)
+    
+    user_role = workspace.members.get(member=request.user, is_active=True).role
+    if role == 'admin' and user_role != 'owner':
+        return JsonResponse({'error':'Only owner can promote member to Admin'}, status=403)
+    
+    if role == 'admin' and workspace.get_admin_count() >= 4:
+        return JsonResponse({'error':'Workspace can only had 4 Admins'}, status=400)
+    
+    existing_invite = WorkspaceInvite.objects.filter(
+        workspace=workspace,
+        email=email,
+        status='pending'
+    ).first()
+
+    if existing_invite:
+        if existing_invite.is_valid():
+            return JsonResponse({'error':'This email is already invited'}, status=400)
+        else:
+            existing_invite.mark_expired()
+
+    already_member = workspace.members.filter(
+        member__email=email,
+        is_active=True
+    ).exists()
+
+    if already_member:
+        return JsonResponse({'error':'This user is already part of workspace'}, status=400)
+    
+    invite = WorkspaceInvite.objects.create(
+        workspace=workspace,
+        invited_by=request.user,
+        email=email,
+        role=role,
+    )
+
+    invite_link = request.build_absolute_uri(f'/invite/{invite.token}/')
+
+    return JsonResponse({
+        'success': True,
+        'invite_link': invite_link,
+        'message': f'Invited sended to {email}'
+    })
+
+
+        
