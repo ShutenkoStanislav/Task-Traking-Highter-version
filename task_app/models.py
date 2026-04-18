@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+import uuid
+from django.utils import timezone
+from datetime import timedelta
+
 
 
 class Workspace(models.Model):
@@ -83,6 +87,9 @@ class WorkspaceMember(models.Model):
         unique_together = ('workspace', 'member')
 
     def clean(self):
+        if not self.pk and not self.workspace.has_space():
+            raise ValidationError("You reach a workspace limite")
+        
         if self.role == 'admin':
             admin_qs = WorkspaceMember.object.filter(
                 workspace=self.workspace,
@@ -92,6 +99,17 @@ class WorkspaceMember(models.Model):
 
             if admin_qs.count() >= 4:
                 raise ValidationError("Workspace limited to 4 admins maximum")
+            
+
+        if self.role == 'owner':
+            owner_qs = WorkspaceMember.object.filter(
+                workspace=self.workspace,
+                role='owner',
+                is_active = True
+            ).exclude(pk=self.pk)
+            if owner_qs.exists():
+                raise ValidationError("Workspace limited to 1 owner maximum")
+            
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
@@ -99,7 +117,78 @@ class WorkspaceMember(models.Model):
     def __str__(self):
         return f"{self.member} - {self.role}"
     
+class WorkspaceInvite(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("accepted", "Accepted"),
+        ("declined", "Declined"),
+        ("expired", "Expired"),
+    ]
+
+    workspace = models.ForeignKey(
+        Workspace,
+        on_delete=models.CASCADE,
+        related_name="invites"
+    )
+    invited_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="sent_invites"
+    )
+    invited_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="received_invites"
+    )
+    email = models.EmailField(
+        blank=True,
+        null=True,
+    )
+    role = models.CharField(
+        max_length=16,
+        choices=WorkspaceMember.MEMBER_PERMISSION,
+        default="member"
+    )
+    token = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+    )
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(days=7)
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
     
+    def is_valid(self):
+        return self.status == "pending" and not self.is_expired()
+    
+    def mark_expired(self):
+        self.status = "expired"
+        self.save(update_fields=["status"])
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workspace", "email"],
+                condition=models.Q(status="pending"),
+                name="unique_pending_invite_per_email"
+            )
+        ]
+
+    def __str__(self):
+        target = self.email or getattr(self.invited_user, "username", "?")
+        return f"Invite: {target} {self.workspace.name} {self.status}"
+
 
 
 class Box(models.Model):
