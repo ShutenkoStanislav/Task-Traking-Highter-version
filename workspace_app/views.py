@@ -8,6 +8,7 @@ from django.shortcuts import redirect ,get_object_or_404
 from task_app.forms import TaskForm, FolderForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.contrib import messages
 import json
 
 
@@ -233,7 +234,6 @@ def folder_create_view(request):
 #Invites
 
 @login_required
-
 def sended_invite(request, worksapce_pk):
     if request.method != "POST":
         return JsonResponse({'error': "Method don't allowed"}, status=405)
@@ -301,5 +301,54 @@ def sended_invite(request, worksapce_pk):
         'message': f'Invited sended to {email}'
     })
 
+@login_required
+def accept_invite(request, token):
+    invite = get_object_or_404(WorkspaceInvite, token=token)
+
+    if not invite.is_valid():
+        messages.error(request, 'This invite sended or outdated')
+        return redirect('task:task_list')
+    
+    workspace = invite.workspace
+
+    if workspace.members.filter(member=request.user, is_active=True).exists():
+        messages.info(request, f'You already part of "{workspace.name}"')
+        return redirect('workspace:workspace_detail', pk=workspace.pk)
+    
+    if not workspace.has_space():
+        invite.mark_expired()
+        messages.error(request, 'Workspace is full')
+        return redirect('tasks:task_list')
+    
+    WorkspaceMember.objects.create(
+        workspace=workspace,
+        member=request.user,
+        role=invite.role,
+    )
+
+    invite.invited_user = request.user
+    invite.status = 'accepted'
+    invite.save(update_fields=['invited_user', 'status'])
+
+    messages.success(request, f'You join to "{workspace.name}"')
+    return redirect('workspace:workspace_detail', pk=workspace.pk)
+
+@login_required
+def decline_invite(request, token):
+    invite = get_object_or_404(
+        WorkspaceInvite,
+        token=token,
+        status="pending",
+    )
+
+    if invite.email != request.user.email:
+        messages.error(request, 'Its not for you')
+        return redirect('tasks:task_list')
+    
+    invite.status = 'declined'
+    invite.save(update_fields=['status'])
+
+    messages.info(request, f'Invite to "{invite.worksapce.name}" declined')
+    return redirect('tasks:task_list')
 
         

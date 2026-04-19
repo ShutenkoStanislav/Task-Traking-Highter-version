@@ -17,4 +17,8 @@ urlpatterns = [
 
     path('folder/create/', views.folder_create_view, name='folder-create'),
     path('workspace/<int:pk>/folder/<int:folder_id>/', task_view.TaskListView.as_view(), name='folder-detail'),
+
+    path('<int:workspace_pk>/invite/', views.sended_invite, name='send_invite'),
+    path('invite/<uuid:token>/', views.accept_invite, name="accept_invite"),
+    path('invite/<uuid:token>/decline/', views.decline_invite, name='decline_invite'),
 ]
