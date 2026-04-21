@@ -309,6 +309,10 @@ def accept_invite(request, token):
         messages.error(request, 'This invite sended or outdated')
         return redirect('task:task_list')
     
+    if invite.email != request.user.email:
+        messages.error(request, 'This invite for another email')
+        return redirect('tasks:task_list')
+    
     workspace = invite.workspace
 
     if workspace.members.filter(member=request.user, is_active=True).exists():
