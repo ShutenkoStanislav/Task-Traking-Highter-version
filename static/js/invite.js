@@ -1,3 +1,8 @@
+function setInviteRole(value, label) {
+    document.getElementById("inviteRole").value = value;
+    document.getElementById("inviteRoleLabel").textContent = label;
+}
+
 (function () {
     const inviteModal = document.getElementById("InviteModal");
 
@@ -36,6 +41,8 @@
         hideAlert();
         linkBlock.classList.add("d-none");
         linkText.value = "";
+        document.getElementById("inviteRole").value = "member";
+        document.getElementById("inviteRoleLabel").textContent = "Member";
     });
 
     sendBtn.addEventListener("click", async () => {
