@@ -50,7 +50,7 @@
                                 </a>
                                 </li>
 
-                                <li><a class="dropdown-item" href="#">
+                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#InviteModal">
                                     <i class="bi bi-person-plus"></i> Invite
                                 </a>
                                 </li>          
@@ -80,6 +80,7 @@
 
     {% include 'includes/modal_task_create.html' %}
     {% include 'includes/modal_folder_create.html' %}
+    {% include 'workspace/modal_invite.html' %}
 
     <script>
         var WORKSPACE_BOXES = {{ boxes_json|safe }};

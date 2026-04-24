@@ -32,8 +32,8 @@ function setInviteRole(value, label) {
     function setLoading(isLoading) {
         sendBtn.disabled = isLoading;
         sendBtn.innerHTML = isLoading
-            ? '<span class="spinner-border spinner-border-sm me-1"></span> Відправка...'
-            : '<i class="bi bi-send"></i> Відправити запрошення';
+            ? '<span class="spinner-border spinner-border-sm me-1"></span> Sending...'
+            : '<i class="bi bi-send"></i> Send invite';
     }
 
     inviteModal.addEventListener("hidden.bs.modal", () => {
