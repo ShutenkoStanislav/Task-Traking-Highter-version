@@ -4,6 +4,14 @@ from django.core.exceptions import ValidationError
 import uuid
 from django.utils import timezone
 from datetime import timedelta
+import random
+import string
+
+def generate_invite_code():
+    chars = string.ascii_letters + string.digits
+    part1 = ''.join(random.choices(chars, k=4))
+    part2 = ''.join(random.choices(chars, k=4))
+    return f"{part1}-{part2}"
 
 
 
@@ -142,9 +150,10 @@ class WorkspaceInvite(models.Model):
         blank=True,
         related_name="received_invites"
     )
-    email = models.EmailField(
-        blank=True,
-        null=True,
+    code = models.CharField(
+        max_length=9,
+        unique=True,
+        default=generate_invite_code
     )
     role = models.CharField(
         max_length=16,
@@ -162,7 +171,7 @@ class WorkspaceInvite(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.expires_at:
-            self.expires_at = timezone.now() + timedelta(days=7)
+            self.expires_at = timezone.now() + timedelta(hours=24)
         super().save(*args, **kwargs)
 
     def is_expired(self):
@@ -177,18 +186,12 @@ class WorkspaceInvite(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["workspace", "email"],
-                condition=models.Q(status="pending"),
-                name="unique_pending_invite_per_email"
-            )
-        ]
+           
+    
 
     def __str__(self):
-        target = self.email or getattr(self.invited_user, "username", "?")
-        return f"Invite: {target} {self.workspace.name} {self.status}"
-
+        return f"Invite {self.code}-{self.workspace.name},  {self.status}"
+        
 
 
 class Box(models.Model):
