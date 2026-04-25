@@ -20,12 +20,12 @@
                 <div class="mb-3">
                     <label class="form-label text-muted">Role</label>
                     <div class="dropdown">
-                        <button class="btn btn-sm dropdown-toggle shadow_custom_dropdown custom_priorety_select_btn"
+                        <button class="btn btn-sm dropdown-toggle shadow_custom_dropdown custom_priorety_select_btn_lg"
                             type="button"
                             data-bs-toggle="dropdown">
                             <span id="inviteRoleLabel">Member</span>
                         </button>
-                        <ul class="dropdown-menu shadow custom_priorety_select_menu">
+                        <ul class="dropdown-menu shadow custom_priorety_select_menu_lg">
                             <li>
                                 <a class="dropdown-item" href="#" onclick="setInviteRole('member', 'member')">
                                     Member
@@ -62,11 +62,11 @@
             <div id="inviteCodeBlock" class="d-none px-3 pb-3">
                 <hr class="mt-0">
                 <label class="form-label text-muted">
-                    <i class="bi bi-link-45deg"></i> Invite link
+                    <i class="bi bi-key"></i> Invite code
                     <small class="text-muted">Valid for 24 hours</small>
                 </label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="inviteCodeText" readonly>
+                    <input type="text" class="form-control fw-bold text-center fs-5" id="inviteCodeText" readonly>
                     <button class="btn btn-outline-secondary shadow_custom_dropdown" id="copyLinkBtn">
                         <i class="bi bi-clipboard"></i>
                     </button>

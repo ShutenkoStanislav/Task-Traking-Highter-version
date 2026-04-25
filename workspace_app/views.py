@@ -234,13 +234,13 @@ def folder_create_view(request):
 #Invites
 
 @login_required
-def sended_invite(request, worksapce_pk):
+def sended_invite(request, workspace_pk):
     if request.method != "POST":
         return JsonResponse({'error': "Method don't allowed"}, status=405)
     
     workspace = get_object_or_404(
         Workspace,
-        pk=worksapce_pk,
+        pk=workspace_pk,
         members__member=request.user
     )
 
@@ -263,11 +263,10 @@ def sended_invite(request, worksapce_pk):
         return JsonResponse({'error':'Workspace can only had 4 Admins'}, status=400)
     
     old_invite = WorkspaceInvite.objects.filter(
-        workspace=workspace,
-        invited_by=request.user,
-        status='pending'
-    )
-
+    workspace=workspace,
+    invited_by=request.user,
+    status='pending'
+    ).first()
     if old_invite:
         old_invite.mark_expired()
     
@@ -289,11 +288,10 @@ def accept_invite(request, token):
     if request.method != "POST":
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
-    code = code.upper() if isinstance(code, str) else code
     data = json.loads(request.body)
     code = data.get('code', '').strip().upper()
 
-    invite = get_object_or_404(WorkspaceInvite, token=token)
+    invite = WorkspaceInvite.objects.filter(code=code).first()
 
     if not invite or not invite.is_valid():
        return JsonResponse({'error': 'Invalid or outdated code'}, status=400)

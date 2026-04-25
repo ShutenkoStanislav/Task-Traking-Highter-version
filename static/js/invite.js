@@ -11,12 +11,11 @@ function setInviteRole(value, label) {
     const WORKSPACE_PK = inviteModal.dataset.workspacePk;
     const CSRF_TOKEN = document.cookie.match(/csrftoken=([^;]+)/)?.[1] ?? "";
 
-    const emailInput = document.getElementById("inviteEmail");
     const roleInput = document.getElementById("inviteRole");
     const sendBtn = document.getElementById("sendInviteBtn");
     const alertBox = document.getElementById("inviteAlert");
-    const linkBlock = document.getElementById("inviteLinkBlock");
-    const linkText = document.getElementById("inviteLinkText");
+    const codeBlock = document.getElementById("inviteCodeBlock");
+    const codeText = document.getElementById("inviteCodeText");
     const copyBtn = document.getElementById("copyLinkBtn");
 
     function showAlert(message, type = "danger") {
@@ -29,64 +28,50 @@ function setInviteRole(value, label) {
         alertBox.classList.add("d-none");
     }
 
-    function setLoading(isLoading) {
-        sendBtn.disabled = isLoading;
-        sendBtn.innerHTML = isLoading
-            ? '<span class="spinner-border spinner-border-sm me-1"></span> Sending...'
-            : '<i class="bi bi-send"></i> Send invite';
-    }
-
     inviteModal.addEventListener("hidden.bs.modal", () => {
-        emailInput.value = "";
-        hideAlert();
-        linkBlock.classList.add("d-none");
-        linkText.value = "";
+        alertBox.classList.add("d-none");
+        codeBlock.classList.add("d-none");
+        codeText.value = "";
         document.getElementById("inviteRole").value = "member";
-        document.getElementById("inviteRoleLabel").textContent = "Member";
+        const roleLabel = document.getElementById("inviteRoleLabel");
+        if (roleLabel) roleLabel.textContent = "Member";
     });
 
+
     sendBtn.addEventListener("click", async () => {
-        const email = emailInput.value.trim();
         const role = roleInput.value;
 
-        hideAlert();
-
-        if (!email) {
-            showAlert("Type email addres", "warning");
-            return;
-        }
-
-        setLoading(true);
+        alertBox.classList.add("d-none");
+        sendBtn.disabled = true;
 
         try {
-            const res = await fetch(`/workspace/${WORKSPACE_PK}/invite/`, {
+            const res = await fetch("/workspace/invite/accept/", {
                 method: "POST",
                 headers : {
                     "Content-Type": "application/json",
                     "X-CSRFToken": CSRF_TOKEN,
                 },
-                body: JSON.stringify({ email, role }),
+                body: JSON.stringify({ role }),
             });
 
             const data = await res.json();
 
             if (data.success) {
-                showAlert(data.message, "success")
-                emailInput.value = "";
-                linkText.value = data.invite_link;
-                linkBlock.classList.remove("d-none");
+               
+                codeText.value = data.code;
+                codeBlock.classList.remove("d-none");
             } else {
                 showAlert(data.error, "danger");
             }
         } catch (err) {
             showAlert("Conection error, try again", "danger");
         } finally {
-            setLoading(false);
+            sendBtn.disabled = false;
         }
     });
 
     copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(linkText.value).then(() => {
+        navigator.clipboard.writeText(codeText.value).then(() => {
             copyBtn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
             setTimeout(() => {
                 copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
