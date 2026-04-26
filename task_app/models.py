@@ -8,7 +8,7 @@ import random
 import string
 
 def generate_invite_code():
-    chars = string.ascii_letters + string.digits
+    chars = string.ascii_uppercase + string.digits
     part1 = ''.join(random.choices(chars, k=4))
     part2 = ''.join(random.choices(chars, k=4))
     return f"{part1}-{part2}"
@@ -110,7 +110,7 @@ class WorkspaceMember(models.Model):
             
 
         if self.role == 'owner':
-            owner_qs = WorkspaceMember.object.filter(
+            owner_qs = WorkspaceMember.objects.filter(
                 workspace=self.workspace,
                 role='owner',
                 is_active = True

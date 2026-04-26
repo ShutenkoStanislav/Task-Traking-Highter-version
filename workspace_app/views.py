@@ -68,7 +68,7 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
 
 def workspace_create_view(request):
     if request.method == "POST":
-        name = request.POST.get("workspace_name")
+        name = request.POST.get("name")
         workspace_space = request.POST.get("workspace_space")
         invite_role = request.POST.get("invite_role")
 
@@ -284,7 +284,7 @@ def sended_invite(request, workspace_pk):
     })
 
 @login_required
-def accept_invite(request, token):
+def accept_invite(request):
     if request.method != "POST":
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
@@ -325,7 +325,7 @@ def accept_invite(request, token):
 
 
 @login_required
-def decline_invite(request, token):
+def decline_invite(request):
     data = json.loads(request.body)
     code = data.get('code', '').strip().upper()
     invite = get_object_or_404(WorkspaceInvite, code=code, status='pending')

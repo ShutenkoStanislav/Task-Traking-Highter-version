@@ -40,12 +40,13 @@ function setInviteRole(value, label) {
 
     sendBtn.addEventListener("click", async () => {
         const role = roleInput.value;
+        console.log("clicked, role:", role, "workspace", WORKSPACE_PK)
 
         alertBox.classList.add("d-none");
         sendBtn.disabled = true;
 
         try {
-            const res = await fetch("/workspace/invite/accept/", {
+            const res = await fetch(`/workspace/${WORKSPACE_PK}/invite/`, {
                 method: "POST",
                 headers : {
                     "Content-Type": "application/json",

@@ -27,12 +27,12 @@
                         </button>
                         <ul class="dropdown-menu shadow custom_priorety_select_menu_lg">
                             <li>
-                                <a class="dropdown-item" href="#" onclick="setInviteRole('member', 'member')">
+                                <a class="dropdown-item" href="#" onclick="setInviteRole('member', 'Member')">
                                     Member
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#" onclick="setInviteRole('admin', 'admin')">
+                                <a class="dropdown-item" href="#" onclick="setInviteRole('admin', 'Admin')">
                                     Admin
                                 </a>
                             </li>
@@ -41,10 +41,27 @@
                     </div>
                 </div>
                 {% else %}
-                    <input type="hidden" id="inviteRole" value="member">   
+                    <input type="hidden" id="inviteRole" value="member">
                 {% endif %}
 
-                <div id="inviteAlert" class="d-none mb-3"></div>
+                <div id="inviteCodeBlock" class="d-none mt-3">
+                    <label class="form-label text-muted mb-1">
+                        <i class="bi bi-key me-1"></i> Invite code
+                        <small class="text-muted">· Valid for 24 hours</small>
+                    </label>
+                    <div class="position-relative">
+                        <input type="text"
+                               class="form-control fw-bold text-center pe-5"
+                               id="inviteCodeText"
+                               readonly>
+                        <button class="btn position-absolute top-50 end-0 translate-middle-y me-1"
+                                id="copyLinkBtn">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="inviteAlert" class="d-none mt-3"></div>
 
             </div>
 
@@ -55,25 +72,12 @@
 
                 <button type="button"
                         class="btn btn-success"
-                        id="sendInviteBtn"
-                        >Generate code</button>
+                        id="sendInviteBtn">
+                    Generate code
+                </button>
             </div>
 
-            <div id="inviteCodeBlock" class="d-none px-3 pb-3">
-                <hr class="mt-0">
-                <label class="form-label text-muted">
-                    <i class="bi bi-key"></i> Invite code
-                    <small class="text-muted">Valid for 24 hours</small>
-                </label>
-                <div class="input-group">
-                    <input type="text" class="form-control fw-bold text-center fs-5" id="inviteCodeText" readonly>
-                    <button class="btn btn-outline-secondary shadow_custom_dropdown" id="copyLinkBtn">
-                        <i class="bi bi-clipboard"></i>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
-    
 </div>
 {% endif %}
