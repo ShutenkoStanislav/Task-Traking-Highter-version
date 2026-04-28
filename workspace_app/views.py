@@ -336,3 +336,86 @@ def decline_invite(request):
     return JsonResponse({'success': True})
 
         
+# Members
+
+@login_required
+def kick_member(request, workspace_pk, member_pk):
+    if request.method != "POST":
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    workspace = get_object_or_404(Workspace, pk=workspace_pk)
+
+    requester = get_object_or_404(
+        WorkspaceMember,
+        workspace=workspace,
+        member=request.user,
+        is_active=True
+    )
+    if requester.role != 'owner':
+        return JsonResponse({'error': 'Only owner can kick members'}, status=403)
+        
+    if requester.pk == member_pk:
+        return JsonResponse({'error': 'You connot kick yourself'}, status=400)
+
+    target = get_object_or_404(
+        WorkspaceMember,
+        pk=member_pk,
+        workspace=workspace,
+        is_active=True   
+    )
+
+    if target.role == 'owner':
+        return JsonResponse({'error': 'Cannot kick owner'}, status=400)
+    
+    target.is_active = False
+    target.save(update_fields=['is_active'])
+
+    return JsonResponse({'success': True})
+
+
+
+@login_required
+def promote_member(request, workspace_pk, member_pk):
+    if request.method != "POST":
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    workspace = get_object_or_404(Workspace, pk=workspace_pk)
+
+    requester = get_object_or_404(
+        WorkspaceMember,
+        workspace=workspace,
+        member=request.user,
+        is_active=True
+    )
+
+    if requester.role not in ('owner', 'admin'):
+        return JsonResponse({'error': 'No permission'}, status=403)
+    
+    target = get_object_or_404(
+        WorkspaceMember,
+        pk=member_pk,
+        workspace=workspace,
+        is_active=True   
+    )
+
+    if target.role == 'owner':
+        return JsonResponse({'error': 'Cannot change owner role'}, status=400)
+    
+    if target.role == 'admin' and target.role == 'admin':
+        return JsonResponse({'error': 'Admins cannot demote other admins'}, status=403)
+    
+    if target.role == 'member':
+        if workspace.get_admin_count() >= 4:
+            return JsonResponse({'error': 'Maximem 4 admins allowed'}, status=400)
+        target.role = 'admin'
+    else:
+        target.role = 'member'
+
+    target.save(update_fields=['role'])
+
+    return JsonResponse({
+        'success': True,
+        'new_role': target.role
+    })
+
+        

@@ -21,4 +21,7 @@ urlpatterns = [
     path('workspace/<int:workspace_pk>/invite/', views.sended_invite, name='send_invite'),
     path('workspace/invite/accept/', views.accept_invite, name="accept_invite"),
     path('workspace/invite/decline/', views.decline_invite, name='decline_invite'),
+
+    path('workspace/<int:workspace_pk>/kick/<int:member_pk>', views.kick_member, name='kick_member'),
+     path('workspace/<int:workspace_pk>/promote/<int:member_pk>', views.promote_member, name='promote_member'),
 ]
