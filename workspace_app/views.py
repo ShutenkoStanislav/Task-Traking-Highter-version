@@ -29,8 +29,10 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['boxes'] = Box.objects.filter(
             workspace=self.object
         ).prefetch_related('folders')
+
         context['members'] = WorkspaceMember.objects.filter(
-            workspace=self.object
+            workspace=self.object,
+            is_active=True
         ).select_related('member')
 
         context['folders'] = Folder.objects.filter(
