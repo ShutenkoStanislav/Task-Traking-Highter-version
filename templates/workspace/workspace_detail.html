@@ -71,7 +71,7 @@
             {% elif tab == 'logs' %}
                 <p>Logs content</p>
             {% elif tab == 'members' %}
-                <p>Members contetn</p>
+                {% include 'workspace/members_tab.html' %}   
             {% elif tab == 'activity' %}
                 <p>Activity content</p>
             {% endif %}   
