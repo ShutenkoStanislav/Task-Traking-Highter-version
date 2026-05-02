@@ -99,7 +99,7 @@ class WorkspaceMember(models.Model):
             raise ValidationError("You reach a workspace limite")
         
         if self.role == 'admin':
-            admin_qs = WorkspaceMember.object.filter(
+            admin_qs = WorkspaceMember.objects.filter(
                 workspace=self.workspace,
                 role='admin',
                 is_active = True

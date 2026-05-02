@@ -10,22 +10,20 @@
     const promoteBtn = document.getElementById("promoteBtn");
     const kickBtn = document.getElementById("kickBtn");
 
-    document.querySelectorAll("[data-member-pk]").forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentMemberPk = btn.dataset.memberPk;
+    document.querySelectorAll("[data-member-pk]").forEach(card => {
+        card.addEventListener("click", () => {
+            currentMemberPk = card.dataset.memberPk;
+            const role = card.dataset.memberRole;
 
-            const role = btn.dataset.memberRole;
-
-            document.getElementById("memberUsername").textContent = btn.dataset.memberUsername;
-            document.getElementById("memberEmail").textContent = btn.dataset.memberEmail;
-            document.getElementById("memberJoined").textContent = btn.dataset.memberJoined;
+            document.getElementById("memberUsername").textContent = card.dataset.memberUsername;
+            document.getElementById("memberEmail").textContent = card.dataset.memberEmail;
+            document.getElementById("memberJoined").textContent = card.dataset.memberJoined;
 
             const roleLabels = {
-                owner: "Owner",
-                admin: "Admin",
+                owner:  "Owner",
+                admin:  "Admin",
                 member: "Member"
             };
-
             document.getElementById("memberRole").textContent = roleLabels[role] ?? role;
 
             if (promoteBtn) {
@@ -35,7 +33,7 @@
                     promoteBtn.classList.remove("d-none");
                     promoteBtn.textContent = role === "member"
                         ? "Promote to Admin"
-                        :  "Demote to Member";
+                        : "Demote to Member";
                 }
             }
 
@@ -43,7 +41,8 @@
                 kickBtn.classList.toggle("d-none", role === "owner");
             }
 
-
+           
+            new bootstrap.Modal(memberModal).show();
         });
     });
 

@@ -1,42 +1,32 @@
 <br>
 <div class="d-flex align-items-center">
-    <h5> Members: {{ members.count }}</h5>
+    <h5>Members: {{ members.count }}</h5>
 </div>
-
 <hr class="m-0">
 
 <div style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
     {% for member in members %}
-        <div class="task-area d-flex align-items-center p-3" style="position: relative;">
-            <div class="flex-grow-1  p-3">
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-                    <div>
-                        <h5 class="mb-0">{{ member.member.username }}</h5>
-                        <small class="text-muted">
-                            {% if member.role == 'owner'%}
-                                Owner
-                            {% elif member.role == 'admin' %}
-                                Admin
-                            {% else %}
-                                Member
-                            {% endif%}
-                        </small>
-                    </div>
-                </div>
+        <div class="d-flex align-items-center p-3"
+             style="position: relative; {% if user_role == 'owner' or user_role == 'admin' %}cursor: pointer;{% endif %}"
+             {% if user_role == 'owner' or user_role == 'admin' %}
+                data-member-pk="{{ member.pk }}"
+                data-member-username="{{ member.member.username }}"
+                data-member-email="{{ member.member.email }}"
+                data-member-role="{{ member.role }}"
+                data-member-joined="{{ member.joined_at|date:'d M Y' }}"
+             {% endif %}>
+
+            <i class="bi bi-person-circle ms-2" style="font-size: 2rem;"></i>
+
+            <div class="ms-3">
+                <h5 class="mb-0">{{ member.member.username }}</h5>
+                <small class="text-muted">
+                    {% if member.role == 'owner' %} Owner
+                    {% elif member.role == 'admin' %} Admin
+                    {% else %} Member
+                    {% endif %}
+                </small>
             </div>
-            {% if user_role == 'owner' or user_role == 'admin' %}
-                <button type="button"
-                        class="stretched-link border-0 p-0 bg-transparent"
-                        data-bs-toggle="modal"
-                        data-bs-target="#MemberDetailModal"
-                        data-member-pk="{{ member.pk }}"
-                        data-member-username="{{ member.member.username }}"
-                        data-member-email="{{ member.member.email }}"
-                        data-member-role="{{ member.role }}"
-                        data-member-joined="{{ member.joined_at|date:'d M Y' }}">
-                </button>
-            {% endif %}
         </div>
         <hr class="m-0">
     {% empty %}
@@ -73,26 +63,20 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                        >Close
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Close
                 </button>
-                <button type="button"
-                        class="btn btn-outline-primary d-none"
-                        id="promoteBtn"
-                        >Promote to admin
+                <button type="button" class="btn btn-outline-primary d-none" id="promoteBtn">
+                    Promote to Admin
                 </button>
-
                 {% if user_role == 'owner' %}
-                <button type="button"
-                        class="btn btn-danger d-none"
-                        id="kickBtn"
-                        >Kick
+                <button type="button" class="btn btn-danger d-none" id="kickBtn">
+                    Kick
                 </button>
                 {% endif %}
             </div>
+
         </div>
     </div>
 </div>
-{% endif%}
+{% endif %}

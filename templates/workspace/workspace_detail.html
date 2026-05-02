@@ -18,19 +18,28 @@
             </div>
 
             <div class="d-flex align-items-center" style="margin-left: 12%;">
-                <div class="d-inline-flex p-1 rounded-pill" style="background: rgba(0, 0, 0, 0.05);">
+                <div class="d-inline-flex p-1 rounded-pill" 
+                    style="background: rgba(0, 0, 0, 0.05); {% if user_role == 'member' %}width: fit-content{% endif %}">
+                    
                     <a href="?tab=main"
                         class="btn btn-lg rounded-pill px-3 {% if tab == 'main' %}bg-white shadow-sm{% endif %}">
                         Main
                     </a>
-                    <a href="?tab=logs"
-                        class="btn btn-lg rounded-pill px-3 {% if tab == 'logs' %}bg-white shadow-sm{% endif %}">
-                        Logs
-                    </a>
+
+                    {% if user_role == 'owner' or user_role == 'admin' %}
                     <a href="?tab=members"
                         class="btn btn-lg rounded-pill px-3 {% if tab == 'members' %}bg-white shadow-sm{% endif %}">
                         Members
                     </a>
+                    {% endif %}
+
+                    {% if user_role == 'owner' %}
+                    <a href="?tab=logs"
+                        class="btn btn-lg rounded-pill px-3 {% if tab == 'logs' %}bg-white shadow-sm{% endif %}">
+                        Logs
+                    </a>
+                    {% endif %}
+
                     <a href="?tab=activity"
                         class="btn btn-lg rounded-pill px-3 {% if tab == 'activity' %}bg-white shadow-sm{% endif %}">
                         Activity
@@ -67,14 +76,14 @@
             <br><br>
 
             {% if tab == 'main' %}
-                {% include 'workspace/main_tab.html' %}   
-            {% elif tab == 'logs' %}
+                {% include 'workspace/main_tab.html' %}
+            {% elif tab == 'members' and user_role in 'owner admin' %}
+                {% include 'workspace/members_tab.html' %}
+            {% elif tab == 'logs' and user_role == 'owner' %}
                 <p>Logs content</p>
-            {% elif tab == 'members' %}
-                {% include 'workspace/members_tab.html' %}   
             {% elif tab == 'activity' %}
                 <p>Activity content</p>
-            {% endif %}   
+            {% endif %} 
         </div>
     </div>
 
