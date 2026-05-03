@@ -26,6 +26,7 @@
     });
 
     joinBtn.addEventListener("click", async () => {
+        console.log("joinBtn clicked, code:", codeInput.value);
         const code = codeInput.value.trim();
 
         if (code.length < 9){

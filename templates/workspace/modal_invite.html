@@ -41,6 +41,12 @@
                     </div>
                 </div>
                 {% else %}
+                    <div class="mb-3">
+                        <p class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            As an Admin you can only invite <strong>Members</strong>
+                        </p>
+                    </div>
                     <input type="hidden" id="inviteRole" value="member">
                 {% endif %}
 

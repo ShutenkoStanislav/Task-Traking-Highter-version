@@ -63,7 +63,8 @@ class TaskListView(LoginRequiredMixin, ListView):
             task__creator=self.request.user).select_related('creator', 'task')
         
         context['workspaces'] = models.Workspace.objects.filter(
-            members__member=self.request.user
+            members__member=self.request.user,
+            members__is_active=True
         )
         context['workspace_form'] = WorkspaceForm()
         

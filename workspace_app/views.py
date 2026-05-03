@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
 import json
+from django.db.models import Case, When, IntegerField
 
 
 
@@ -20,7 +21,8 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return Workspace.objects.filter(
-            members__member=self.request.user
+            members__member=self.request.user,
+            members__is_active=True
         )
     
     def get_context_data(self, **kwargs):
@@ -33,14 +35,23 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['members'] = WorkspaceMember.objects.filter(
             workspace=self.object,
             is_active=True
-        ).select_related('member')
+        ).select_related('member').annotate(
+            role_order=Case(
+                When(role='owner', then=0),
+                When(role='admin', then=1),
+                When(role='member', then=2),
+                default=3,
+                output_field=IntegerField()
+            )
+        ).order_by('role_order')
 
         context['folders'] = Folder.objects.filter(
             creator=self.request.user,
             box__isnull=True
         )
         context['workspaces'] = Workspace.objects.filter(
-            members__member=self.request.user
+            members__member=self.request.user,
+            members__is_active=True
         )
         context['user_role'] = WorkspaceMember.objects.get(
             workspace=self.object,
@@ -308,11 +319,21 @@ def accept_invite(request):
         return JsonResponse({'error': 'Workspace full'}, status=400)
        
     
-    WorkspaceMember.objects.create(
+    existing = WorkspaceMember.objects.filter(
         workspace=workspace,
-        member=request.user,
-        role=invite.role,
-    )
+        member=request.user
+    ).first()
+
+    if existing:
+        existing.is_active = True
+        existing.role = invite.role
+        existing.save(update_fields=['is_active', 'role'])
+    else: 
+        WorkspaceMember.objects.create(
+            workspace=workspace,
+            member=request.user,
+            role=invite.role
+        )
 
     invite.invited_user = request.user
     invite.status = 'accepted'
