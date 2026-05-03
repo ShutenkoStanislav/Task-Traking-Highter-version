@@ -80,3 +80,20 @@
     </div>
 </div>
 {% endif %}
+
+{% if user_role == 'owner' or user_role == 'admin' %}
+<div class="modal fade" id="ConfirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog  modal-sm modal-dialog-centered">
+        <div class="modal-content custom_modal_shadow">
+            <div class="modal-body text-center p-4">
+                <h5 class="mb-2" id="confirmTitle"></h5>
+                <p class="text-muted  mb-4" id="confirmText"></p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                </div>             
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

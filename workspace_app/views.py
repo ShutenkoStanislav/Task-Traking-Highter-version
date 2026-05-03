@@ -403,7 +403,7 @@ def promote_member(request, workspace_pk, member_pk):
     if target.role == 'owner':
         return JsonResponse({'error': 'Cannot change owner role'}, status=400)
     
-    if target.role == 'admin' and target.role == 'admin':
+    if requester.role == 'admin' and target.role == 'admin':
         return JsonResponse({'error': 'Admins cannot demote other admins'}, status=403)
     
     if target.role == 'member':
