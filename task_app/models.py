@@ -191,7 +191,44 @@ class WorkspaceInvite(models.Model):
 
     def __str__(self):
         return f"Invite {self.code}-{self.workspace.name},  {self.status}"
-        
+
+
+class WorkspaceLog(models.Model):
+    ACTION_CHOISES = [
+        ("task_created", "Task created"),
+        ("task_delete", "Task delete"),
+        ("task_status_changed", "Task status changed"),
+        ("task_priority_changed", "Task priority changed"),
+        ("member_added", "Member added"),
+        ("member_removed","Member removed"),
+        ("member_role_changes", "Member role changes"),
+        ("folder_created", "Folder created"),
+        ("folder_deleted", "Folder deleted"),
+    ]   
+
+    workspace = models.ForeignKey(
+        Workspace,
+        on_delete=models.CASCADE,
+        related_name="logs"
+    )
+
+    actor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="workspace_log"
+    )
+
+    action = models.CharField(max_length=32, choices=ACTION_CHOISES)
+    meta = models.JSONField(default=dict, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta: 
+        ordering = ["-timestamp"]
+
+
+    def __str__(self):
+        return f"[{self.workspace}] {self.actor} -> {self.action}"
+
 
 
 class Box(models.Model):
