@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
-from task_app.models import Workspace, WorkspaceMember, Box, Folder, WorkspaceInvite
+from task_app.models import Workspace, WorkspaceMember, Box, Folder, WorkspaceInvite, WorkspaceLog
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from workspace_app.forms import BoxForm
@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 import json
 from django.db.models import Case, When, IntegerField
+
 
 
 
@@ -393,6 +394,14 @@ def kick_member(request, workspace_pk, member_pk):
     target.is_active = False
     target.save(update_fields=['is_active'])
 
+
+    WorkspaceLog.objects.create(
+        workspace=workspace,
+        actor=request.user,
+        action="member_removed",
+        meta={"members": target.member.username}
+    )
+
     return JsonResponse({'success': True})
 
 
@@ -427,6 +436,8 @@ def promote_member(request, workspace_pk, member_pk):
     if requester.role == 'admin' and target.role == 'admin':
         return JsonResponse({'error': 'Admins cannot demote other admins'}, status=403)
     
+    old_role = target.role
+
     if target.role == 'member':
         if workspace.get_admin_count() >= 4:
             return JsonResponse({'error': 'Maximem 4 admins allowed'}, status=400)
@@ -435,6 +446,15 @@ def promote_member(request, workspace_pk, member_pk):
         target.role = 'member'
 
     target.save(update_fields=['role'])
+
+    WorkspaceLog.objects.create(
+        workspace=workspace,
+        actor=request.user,
+        action="member_role_changed",
+        meta={"members": target.member.username,
+              "from": old_role,
+              "to": target.role}
+    )
 
     return JsonResponse({
         'success': True,
