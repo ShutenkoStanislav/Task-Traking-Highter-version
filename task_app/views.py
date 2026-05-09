@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from task_app import models
-from .models import Folder
+from .models import Folder, WorkspaceLog
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -11,6 +11,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from workspace_app.forms import WorkspaceForm
+
 
 from django.contrib.auth import login
 
@@ -113,7 +114,17 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
-        return super().form_valid(form)
+        responce = super().form_valid(form)
+    
+        if self.object.workspace:
+            WorkspaceLog.objects.create(
+                workspace=self.objects.workspace,
+                actor=self.request.user,
+                action="task_created",
+                meta={"task_title": self.object.title}
+            )
+
+        return responce
     
     def get_success_url(self):
         if self.object.folder:
@@ -144,8 +155,25 @@ class FolderCreateView(LoginRequiredMixin, CreateView):
 class TaskCompleteView(LoginRequiredMixin,  View):
     def post(self, request, *args, **kwargs):
         task = get_object_or_404(models.Task, pk=self.kwargs.get("pk"), creator=self.request.user)
+        
+        old_status = task.status
         task.status = "done"
         task.save()
+
+
+        if task.workspace:
+            WorkspaceLog.objects.create(
+                workspace=self.object.workspace,
+                actor = self.request.user,
+                action="task_status_changed",
+                meta={"task_title": task.title,
+                      "from": old_status,
+                      "to": "done",
+                      }
+            )
+
+        
+
         return JsonResponse({'status': 'success'})
     
     def get_object(self):
@@ -156,6 +184,25 @@ class TaskCompleteView(LoginRequiredMixin,  View):
 class TaskUpdateView(LoginRequiredMixin,  UpdateView):
     model = models.Task
     fields = ["title", "description", "priority"] 
+
+
+    def form_valid(self, form):
+        old = models.Task.objects.get(pk=self.object.pk)
+
+        response = super().form_valid(form)
+
+        if self.object.workpspace and old.priority != self.object.priority:
+            WorkspaceLog.objects.create(
+                workspace=self.object.workspace,
+                actor = self.request.user,
+                action="task_priority_changed",
+                meta={"task_title": self.object.title,
+                      "from": old.priority,
+                      "to": self.object.priority,
+                      }
+            )
+
+        return response
 
     def get_queryset(self):
         return models.Task.objects.filter(creator=self.request.user)
@@ -170,6 +217,23 @@ class TaskUpdateView(LoginRequiredMixin,  UpdateView):
 
 class TaskDeleteView(LoginRequiredMixin ,DeleteView):
     model = models.Task
+
+    def form_valid(self, form):
+        workspace = self.object.workspace
+        title = self.object.title
+
+        response = super().form_valid(form)
+
+
+        if workspace:
+            WorkspaceLog.objects.create(
+                workspace=self.object.workspace,
+                actor = self.request.user,
+                action="task_deleted",
+                meta={"task_title": title}
+            )
+        
+        return response
     
     def get_queryset(self):
         return models.Task.objects.filter(creator=self.request.user)
