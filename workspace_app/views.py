@@ -11,8 +11,8 @@ from django.http import JsonResponse
 from django.contrib import messages
 import json
 from django.db.models import Case, When, IntegerField
-
-
+from django.http import Http404
+from django.utils.dateparse import parse_date
 
 
 class WorkspaceDetailView(LoginRequiredMixin, DetailView):
@@ -462,3 +462,68 @@ def promote_member(request, workspace_pk, member_pk):
     })
 
         
+class WorkspaceLogsView(LoginRequiredMixin, ListView):
+    model = WorkspaceLog
+    template_name = "workspace/logs_tab.html"
+    context_object_name = "logs"
+    paginate_by = 50
+
+    def dispatch(self, request, *args, **kwargs):
+        self.workspace = get_object_or_404(Workspace, pk=self.kwargs["workspace_pk"])
+
+        is_owner = WorkspaceMember.objects.filter(
+            workspace=self.workspace,
+            member=request.user,
+            role="owner",
+            is_active=True,
+        ).exists()
+
+        if not is_owner:
+            raise Http404
+        
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        qs = WorkspaceLog.objects.filter(
+            workspace=self.workspace
+        ).select_related("actor")
+
+        category = self.request.GET.get("category", "")
+        if category == "tasks":
+            qs = qs.filter(action__startswith="task_")
+        elif category == "members":
+            qs = qs.filter(action__startswith="members_")
+        elif category == "folders":
+            qs = qs.filter(action__startswith="folders_")
+
+        actor_id = self.request.Get.get("actor", "")
+        if actor_id:
+            qs = qs.filter(actor_id=actor_id)
+
+        date_from = self.request.GET.get("date_from", "")
+        date_to = self.request.GET.get("date_to", "")
+        if date_from:
+            qs = qs.filter(timestamp_date__gte=parse_date(date_from))
+        if date_to:
+            qs = qs.filter(timestamp_date__gte=parse_date(date_to))
+
+        return qs
+    
+    def get_context_data(self, **kwargs):
+       ctx = super().get_context_data(**kwargs)
+       ctx["workspace"] = self.workspace
+
+       ctx["members"] = WorkspaceMember.objects.filter(
+           workspace=self.workspace,
+           is_active=True,
+       ).select_related("member")
+
+
+       ctx["current_filters"] = {
+           "category": self.request.GET.get("category", ""),
+           "actor": self.request.GET.get("actor", ""),
+           "date_from": self.request.GET.get("date_from", ""),
+           "date_to": self.request.GET.get("date_to", ""),
+       }
+
+       return ctx
