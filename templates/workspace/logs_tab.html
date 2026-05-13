@@ -24,14 +24,14 @@
         {% endfor %}
     </select>
 
-    <input type="date" class="form-control form-control-sw w-auto" id="FilterDateFrom"
+    <input type="date" class="form-control form-control-sm w-auto" id="filterDateFrom"
         value="{{ current_filters.date_from }}">
 
-    <input type="date" class="form-control form-control-sw w-auto" id="FilterDateTo"
-        value="{{ current_filters.date_do }}">
+    <input type="date" class="form-control form-control-sm w-auto" id="filterDateTo"
+        value="{{ current_filters.date_to }}">
 
 
-    {% if current_filter.category or current_filters.actor or current_filters.date_from or current_filters.date_to %}
+    {% if current_filters.category or current_filters.actor or current_filters.date_from or current_filters.date_to %}
     <a href="?tab=logs" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-x-lg"></i> Clear
     </a>
