@@ -77,6 +77,40 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
             })
         context['boxes_json'] = json.dumps(boxes_data)
 
+        if context['user_role'] == 'owner' and context['tab'] == 'logs':
+            qs = WorkspaceLog.objects.filter(
+                workspace=self.object
+            ).select_related("actor")
+
+            category = self.request.GET.get("category", "")
+            if category == "tasks":
+                qs = qs.filter(action__startswith="task_")
+            elif category == "members":
+                qs = qs.filter(action__startswith="member_")
+            elif category == "folders":
+                qs = qs.filter(action__startswith="folder_")
+            elif category == "box":
+                qs = qs.filter(action__startswith="box_")
+
+            actor_id = self.request.GET.get("actor", "")
+            if actor_id:
+                qs = qs.filter(actor_id=actor_id)
+
+            date_from = self.request.GET.get("date_from", "")
+            date_to = self.request.GET.get("date_to", "")
+            if date_from:
+                qs = qs.filter(timestamp__date__gte=parse_date(date_from))
+            if date_to:
+                qs = qs.filter(timestamp__date__lte=parse_date(date_to))
+
+            context["logs"] = qs
+            context["current_filters"] = {
+                "category":category,
+                "actor":actor_id,
+                "date_from": date_from,
+                "date_to": date_to,
+            }
+
         return context
 
 
@@ -174,15 +208,38 @@ class BoxCreateView(LoginRequiredMixin, CreateView):
             pk=self.kwargs['workspace_pk'],
             members__member=self.request.user
         )
-        
-        return super().form_valid(form)
+        responce = super().form_valid(form)
+ 
+        WorkspaceLog.objects.create(
+                workspace=self.object.workspace,
+                actor=self.request.user,
+                action="box_created",
+                meta={"box_name": self.object.name}
+            )
+
+        return responce
 
     def get_success_url(self):
         return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
 
 
 class BoxDeleteView(LoginRequiredMixin, DeleteView):
-    model = Box  
+    model = Box 
+
+    def form_valid(self, form):
+        workspace = self.objects.workspace
+        box_name = self.objects.name
+
+        responce = super().form_valid(form)
+ 
+        WorkspaceLog.objects.create(
+                workspace=workspace,
+                actor=self.request.user,
+                action="box_deleted",
+                meta={"box_name": box_name}
+            )
+
+        return responce 
 
     def get_queryset(self):
         return Box.objects.filter(
@@ -224,13 +281,21 @@ def folder_create_view(request):
                 return redirect('tasks:task_list')
 
             if name:
-                Folder.objects.create(
+                folder = Folder.objects.create(
                     name=name,
                     box=box,
                     workspace=box.workspace,
                     creator=request.user,
                     color=color
                 )
+
+                WorkspaceLog.objects.create(
+                    workspace=box.workspace,
+                    actor=request.user,
+                    action="folder_created",
+                    meta={"folder_name": folder.name}
+                )
+
 
             return redirect('workspace:workspace_detail', pk=box.workspace.pk)
         else:
@@ -462,68 +527,3 @@ def promote_member(request, workspace_pk, member_pk):
     })
 
         
-class WorkspaceLogsView(LoginRequiredMixin, ListView):
-    model = WorkspaceLog
-    template_name = "workspace/logs_tab.html"
-    context_object_name = "logs"
-    paginate_by = 50
-
-    def dispatch(self, request, *args, **kwargs):
-        self.workspace = get_object_or_404(Workspace, pk=self.kwargs["workspace_pk"])
-
-        is_owner = WorkspaceMember.objects.filter(
-            workspace=self.workspace,
-            member=request.user,
-            role="owner",
-            is_active=True,
-        ).exists()
-
-        if not is_owner:
-            raise Http404
-        
-        return super().dispatch(request, *args, **kwargs)
-    
-    def get_queryset(self):
-        qs = WorkspaceLog.objects.filter(
-            workspace=self.workspace
-        ).select_related("actor")
-
-        category = self.request.GET.get("category", "")
-        if category == "tasks":
-            qs = qs.filter(action__startswith="task_")
-        elif category == "members":
-            qs = qs.filter(action__startswith="members_")
-        elif category == "folders":
-            qs = qs.filter(action__startswith="folders_")
-
-        actor_id = self.request.Get.get("actor", "")
-        if actor_id:
-            qs = qs.filter(actor_id=actor_id)
-
-        date_from = self.request.GET.get("date_from", "")
-        date_to = self.request.GET.get("date_to", "")
-        if date_from:
-            qs = qs.filter(timestamp_date__gte=parse_date(date_from))
-        if date_to:
-            qs = qs.filter(timestamp_date__gte=parse_date(date_to))
-
-        return qs
-    
-    def get_context_data(self, **kwargs):
-       ctx = super().get_context_data(**kwargs)
-       ctx["workspace"] = self.workspace
-
-       ctx["members"] = WorkspaceMember.objects.filter(
-           workspace=self.workspace,
-           is_active=True,
-       ).select_related("member")
-
-
-       ctx["current_filters"] = {
-           "category": self.request.GET.get("category", ""),
-           "actor": self.request.GET.get("actor", ""),
-           "date_from": self.request.GET.get("date_from", ""),
-           "date_to": self.request.GET.get("date_to", ""),
-       }
-
-       return ctx

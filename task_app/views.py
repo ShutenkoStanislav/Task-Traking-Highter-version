@@ -115,10 +115,11 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.creator = self.request.user
         responce = super().form_valid(form)
-    
+
+
         if self.object.workspace:
             WorkspaceLog.objects.create(
-                workspace=self.objects.workspace,
+                workspace=self.object.workspace,
                 actor=self.request.user,
                 action="task_created",
                 meta={"task_title": self.object.title}
@@ -160,19 +161,16 @@ class TaskCompleteView(LoginRequiredMixin,  View):
         task.status = "done"
         task.save()
 
-
         if task.workspace:
             WorkspaceLog.objects.create(
-                workspace=self.object.workspace,
-                actor = self.request.user,
+                workspace=task.workspace,
+                actor = request.user,
                 action="task_status_changed",
                 meta={"task_title": task.title,
                       "from": old_status,
                       "to": "done",
                       }
-            )
-
-        
+            )    
 
         return JsonResponse({'status': 'success'})
     
@@ -191,7 +189,7 @@ class TaskUpdateView(LoginRequiredMixin,  UpdateView):
 
         response = super().form_valid(form)
 
-        if self.object.workpspace and old.priority != self.object.priority:
+        if self.object.workspace and old.priority != self.object.priority:
             WorkspaceLog.objects.create(
                 workspace=self.object.workspace,
                 actor = self.request.user,
@@ -227,7 +225,7 @@ class TaskDeleteView(LoginRequiredMixin ,DeleteView):
 
         if workspace:
             WorkspaceLog.objects.create(
-                workspace=self.object.workspace,
+                workspace=workspace,
                 actor = self.request.user,
                 action="task_deleted",
                 meta={"task_title": title}
@@ -245,6 +243,22 @@ class TaskDeleteView(LoginRequiredMixin ,DeleteView):
 
 class FolderDeleteView(LoginRequiredMixin ,DeleteView):
     model = models.Folder
+
+    def form_valid(self, form):
+        workspace = self.object.workspace
+        folder_name = self.object.name
+
+        responce = super().form_valid(form)
+
+        if workspace:
+            WorkspaceLog.objects.create(
+                    workspace=workspace,
+                    actor=self.request.user,
+                    action="folder_deleted",
+                    meta={"folder_name": folder_name}
+                )
+
+        return responce
     
     def get_queryset(self):
         return models.Folder.objects.filter(creator=self.request.user)

@@ -1,0 +1,126 @@
+<br>
+<div class="d-flex aling-items-center justify-content-between">
+    <h5>Logs</h5>
+    <small class="text-muted">{{ logs|length }} event{{ logs|length|pluralize }}</small>
+</div>
+<hr class="m-0">
+
+<div class="d-flex gap-2 flex-wrap my-3">
+    <select class="form-select form-select-sm w-auto" id="filterCategory">
+        <option value="" {% if not current_filters.category %}selected{% endif %}>All events</option>
+        <option value="tasks" {% if current_filters.category == 'tasks' %}selected{% endif %}>Tasks</option>
+        <option value="members" {% if current_filters.category == 'members' %}selected{% endif %}>Members</option>
+        <option value="folders" {% if current_filters.category == 'folders' %}selected{% endif %}>Folders</option>
+        <option value="box"     {% if current_filters.category == 'box' %}selected{% endif %}>Boxes</option>
+    </select>
+
+    <select class="form-select form-select-sm w-auto" id="filterActor"> 
+        <option value="" {% if not current_filters.actor%}selected{% endif%}>All members</option>
+        {% for m in members %}
+            <option value="{{ m.member.pk }}"
+                {% if current_filters.actor == m.member.pk|stringformat:"s" %}selected{% endif%}>
+                {{ m.member.username}}
+            </option>
+        {% endfor %}
+    </select>
+
+    <input type="date" class="form-control form-control-sw w-auto" id="FilterDateFrom"
+        value="{{ current_filters.date_from }}">
+
+    <input type="date" class="form-control form-control-sw w-auto" id="FilterDateTo"
+        value="{{ current_filters.date_do }}">
+
+
+    {% if current_filter.category or current_filters.actor or current_filters.date_from or current_filters.date_to %}
+    <a href="?tab=logs" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-x-lg"></i> Clear
+    </a>
+    {% endif %}
+</div>
+
+<div style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
+    {% for log in logs %}
+        <div class="d-flex aling-items-start p-3">
+            <div class="me-3 mt-1">
+                {% if log.action == 'task_created' %}
+                    <i class="bi bi-plus-circle" style="color: #5a9e6f;"></i>
+                {% elif log.action == 'task_deleted' %}
+                    <i class="bi bi-trash" style="color: #c0665a;"></i>
+                {% elif log.action == 'task_status_changed' %}
+                    <i class="bi bi-arrow-left-right" style="color: #5a7ec0;"></i>
+                {% elif log.action == 'task_priority_changed' %}
+                    <i class="bi bi-flag" style="color: #c0a25a;"></i>
+                {% elif log.action == 'member_added' %}
+                    <i class="bi bi-person-plus" style="color: #5a9e6f;"></i>
+                {% elif log.action == 'member_removed' %}
+                    <i class="bi bi-person-dash" style="color: #c0665a;"></i>
+                {% elif log.action == 'member_role_changed' %}
+                    <i class="bi bi-shield" style="color: #5a7ec0;"></i>
+                {% elif log.action == 'folder_created' %}
+                    <i class="bi bi-folder-plus" style="color: #5a9e6f;"></i>
+                {% elif log.action == 'folder_deleted' %}
+                    <i class="bi bi-folder-x" style="color: #c0665a;"></i>
+                 {% elif log.action == 'box_created' %}
+                    <i class="bi bi-box" style="color: #5a9e6f;"></i>
+                {% elif log.action == 'box_deleted' %}
+                    <i class="bi bi-box" style="color: #c0665a;"></i>
+                {% endif %}
+                
+            </div>
+
+            <div class="flex-grow-1">
+                <div>
+                    <span class="fw-bold">{{ log.actor.username }}</span>
+
+                    {% if log.action == 'task_created' %}
+                        created task <span class="text-muted">«{{ log.meta.task_title }}»</span>
+
+                    {% elif log.action == 'task_deleted' %}
+                        deleted task <span class="text-muted">«{{ log.meta.task_title }}»</span>
+
+                    {% elif log.action == 'task_status_changed' %}
+                        changed status of <span class="text-muted">«{{ log.meta.task_title }}»</span>
+                        from <span class="badge bg-light text-dark border">{{ log.meta.from }}</span>
+                        to <span class="badge bg-light text-dark border">{{ log.meta.to }}</span>
+
+                    {% elif log.action == 'task_priority_changed' %}
+                        changed priority of <span class="text-muted">«{{ log.meta.task_title }}»</span>
+                        from <span class="badge bg-light text-dark border">{{ log.meta.from }}</span>
+                        to <span class="badge bg-light text-dark border">{{ log.meta.to }}</span>
+
+                    {% elif log.action == 'member_added' %}
+                        added member <span class="text-muted">{{ log.meta.member }}</span>
+
+                    {% elif log.action == 'member_removed' %}
+                        removed member <span class="text-muted">{{ log.meta.member }}</span>
+
+                    {% elif log.action == 'member_role_changed' %}
+                        changed role of <span class="text-muted">{{ log.meta.member }}</span>
+                        from <span class="badge bg-light text-dark border">{{ log.meta.from }}</span>
+                        to <span class="badge bg-light text-dark border">{{ log.meta.to }}</span>
+
+                    {% elif log.action == 'folder_created' %}
+                        created folder <span class="text-muted">«{{ log.meta.folder_name }}»</span>
+
+                    {% elif log.action == 'folder_deleted' %}
+                        deleted folder <span class="text-muted">«{{ log.meta.folder_name }}»</span>
+
+                    {% elif log.action == 'box_created' %}
+                        created box <span class="text-muted">«{{ log.meta.box_name }}»</span>
+
+                    {% elif log.action == 'box_deleted' %}
+                        deleted box <span class="text-muted">«{{ log.meta.box_name }}»</span>
+
+                    {% endif %}
+
+                    
+                </div>
+
+                <small class="text-muted">{{ log.timestamp|date:"d M Y, H:i" }}</small>
+            </div>
+        </div>
+        <hr class="m-0">  
+    {% empty %} 
+        <p class="text-muted text-center mt-4">No events yet</p>
+    {% endfor %}
+</div>

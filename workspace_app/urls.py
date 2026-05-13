@@ -24,6 +24,4 @@ urlpatterns = [
 
     path('workspace/<int:workspace_pk>/kick/<int:member_pk>/', views.kick_member, name='kick_member'),
     path('workspace/<int:workspace_pk>/promote/<int:member_pk>/', views.promote_member, name='promote_member'),
-
-    path('workspace/<int:workspace_pk>/logs/', views.WorkspaceLogsView.as_view(), name='workspace_logs'),
 ]

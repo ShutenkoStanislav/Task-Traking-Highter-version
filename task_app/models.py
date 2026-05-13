@@ -196,14 +196,16 @@ class WorkspaceInvite(models.Model):
 class WorkspaceLog(models.Model):
     ACTION_CHOISES = [
         ("task_created", "Task created"),
-        ("task_delete", "Task delete"),
+        ("task_deleted", "Task deleted"),
         ("task_status_changed", "Task status changed"),
         ("task_priority_changed", "Task priority changed"),
         ("member_added", "Member added"),
         ("member_removed","Member removed"),
-        ("member_role_changes", "Member role changes"),
+        ("member_role_changed", "Member role changed"),
         ("folder_created", "Folder created"),
         ("folder_deleted", "Folder deleted"),
+        ("box_created", "Box created"),
+        ("box_deleted", "Box deleted"),
     ]   
 
     workspace = models.ForeignKey(
@@ -214,7 +216,8 @@ class WorkspaceLog(models.Model):
 
     actor = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         related_name="workspace_log"
     )
 

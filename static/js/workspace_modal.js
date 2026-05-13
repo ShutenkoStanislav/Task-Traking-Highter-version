@@ -73,6 +73,8 @@ document.addEventListener('show.bs.modal', function(event) {
                 `).join('');
             }
             window._taskBoxes = boxes;
+            const workspaceInput = document.getElementById('task-workspace-hidden');
+            if (workspaceInput) workspaceInput.value = trigger.dataset.workspaceId;
         }
     }
 });

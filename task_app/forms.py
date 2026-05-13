@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ["title", "description", "priority", "due_date", "folder"] 
+        fields = ["title", "description", "priority", "due_date", "folder", "workspace"] 
         widgets = {
             'due_date': forms.TextInput(attrs={
             'class': 'form-control minimalist-date-picker', 
@@ -82,11 +82,6 @@ class CommentForm(forms.ModelForm):
             })
         }
 
-
-
-
-            
-                 
 
 
 class TaskFilterForm(forms.Form):

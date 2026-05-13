@@ -80,7 +80,7 @@
             {% elif tab == 'members' and user_role in 'owner admin' %}
                 {% include 'workspace/members_tab.html' %}
             {% elif tab == 'logs' and user_role == 'owner' %}
-                <p>Logs content</p>
+                {% include 'workspace/logs_tab.html' %}
             {% elif tab == 'activity' %}
                 <p>Activity content</p>
             {% endif %} 
