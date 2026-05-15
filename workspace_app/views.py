@@ -77,6 +77,10 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
             })
         context['boxes_json'] = json.dumps(boxes_data)
 
+        if context['tab'] == 'logs':
+                if context['user_role'] != 'owner':
+                    raise Http404
+
         if context['user_role'] == 'owner' and context['tab'] == 'logs':
             qs = WorkspaceLog.objects.filter(
                 workspace=self.object
@@ -227,10 +231,9 @@ class BoxDeleteView(LoginRequiredMixin, DeleteView):
     model = Box 
 
     def form_valid(self, form):
-        workspace = self.objects.workspace
-        box_name = self.objects.name
-
-        responce = super().form_valid(form)
+        workspace = self.object.workspace
+        box_name = self.object.name
+        response = super().form_valid(form)
  
         WorkspaceLog.objects.create(
                 workspace=workspace,
@@ -239,13 +242,14 @@ class BoxDeleteView(LoginRequiredMixin, DeleteView):
                 meta={"box_name": box_name}
             )
 
-        return responce 
+        return response 
 
     def get_queryset(self):
         return Box.objects.filter(
             workspace__members__member=self.request.user,
             workspace__members__role__in=['owner', 'admin']
         )
+        
     
     def get_success_url(self):
         return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
@@ -401,9 +405,19 @@ def accept_invite(request):
             role=invite.role
         )
 
+
+    WorkspaceLog.objects.create(
+        workspace=workspace,
+        actor=request.user,
+        action="member_added",
+        meta={"member": request.user.username}
+    )
+
     invite.invited_user = request.user
     invite.status = 'accepted'
     invite.save(update_fields=['invited_user', 'status'])
+
+
 
     return JsonResponse({
         'success': True,
@@ -516,7 +530,7 @@ def promote_member(request, workspace_pk, member_pk):
         workspace=workspace,
         actor=request.user,
         action="member_role_changed",
-        meta={"members": target.member.username,
+        meta={"member": target.member.username,
               "from": old_role,
               "to": target.role}
     )
