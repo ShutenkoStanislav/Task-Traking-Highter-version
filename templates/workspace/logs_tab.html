@@ -6,33 +6,62 @@
 <hr class="m-0">
 
 <div class="d-flex gap-2 flex-wrap my-3">
-    <select class="form-select form-select-sm w-auto" id="filterCategory">
-        <option value="" {% if not current_filters.category %}selected{% endif %}>All events</option>
-        <option value="tasks" {% if current_filters.category == 'tasks' %}selected{% endif %}>Tasks</option>
-        <option value="members" {% if current_filters.category == 'members' %}selected{% endif %}>Members</option>
-        <option value="folders" {% if current_filters.category == 'folders' %}selected{% endif %}>Folders</option>
-        <option value="box"     {% if current_filters.category == 'box' %}selected{% endif %}>Boxes</option>
-    </select>
 
-    <select class="form-select form-select-sm w-auto" id="filterActor"> 
-        <option value="" {% if not current_filters.actor%}selected{% endif%}>All members</option>
-        {% for m in members %}
-            <option value="{{ m.member.pk }}"
-                {% if current_filters.actor == m.member.pk|stringformat:"s" %}selected{% endif%}>
-                {{ m.member.username}}
-            </option>
-        {% endfor %}
-    </select>
+    <div class="dropdown">
+        <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn custom_priorety_select_btn_lg shadow_custom_dropdown"
+                type="button" data-bs-toggle="dropdown">
+            <span id="categoryLabel">
+                {% if current_filters.category == 'tasks' %}Tasks
+                {% elif current_filters.category == 'members' %}Members
+                {% elif current_filters.category == 'folders' %}Folders
+                {% elif current_filters.category == 'box' %}Boxes
+                {% else %}All events{% endif %}
+            </span>
+        </button>
+        <ul class="dropdown-menu shadow_custom_dropdown custom_priorety_select_menu">
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setCategory('', 'All events')">All events</a></li>
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setCategory('tasks', 'Tasks')">Tasks</a></li>
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setCategory('members', 'Members')">Members</a></li>
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setCategory('folders', 'Folders')">Folders</a></li>
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setCategory('box', 'Boxes')">Boxes</a></li>
+        </ul>
+        <input type="hidden" id="filterCategory" value="{{ current_filters.category }}">
+    </div>
 
-    <input type="date" class="form-control form-control-sm w-auto" id="filterDateFrom"
-        value="{{ current_filters.date_from }}">
+    <div class="dropdown">
+        <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn custom_priorety_select_btn_lg shadow_custom_dropdown" type="button" data-bs-toggle="dropdown">
+            <span id="actorLabel">
+                {% if current_filters.actor %}
+                    {% for m in members %}
+                        {% if m.member.pk|stringformat:"s" == current_filters.actor %}{{ m.member.username }}{% endif %}
+                    {% endfor %}
+                {% else %}All members{% endif %}
+            </span>
+        </button>
 
-    <input type="date" class="form-control form-control-sm w-auto" id="filterDateTo"
-        value="{{ current_filters.date_to }}">
+        <ul class="dropdown-menu shadow_custom_dropdown custom_priorety_select_menu">
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setActor('', 'All members')">All members</a></li>
+            {% for m in members %}
+            <li><a class="dropdown-item rounded-3" href="#" onclick="setActor('{{ m.member.pk }}', '{{ m.member.username }}')">
+                {{ m.member.username }}
+            </a></li>
+            {% endfor %}
+        </ul>
 
+        <input type="hidden" id="filterActor" value="{{ current_filters.actor }}">
+    </div>
+
+   
+    <input type="text" class="form-control form-control-sm minimalist-date-picker w-auto"
+        id="filterDateFrom" placeholder="Date from"
+        value="{{ current_filters.date_from }}" autocomplete="off">
+
+    <input type="text" class="form-control form-control-sm minimalist-date-picker w-auto"
+        id="filterDateTo" placeholder="Date to"
+        value="{{ current_filters.date_to }}" autocomplete="off">
 
     {% if current_filters.category or current_filters.actor or current_filters.date_from or current_filters.date_to %}
-    <a href="?tab=logs" class="btn btn-sm btn-outline-secondary">
+    <a href="?tab=logs" class="btn btn-sm custom_priorety_select_btn">
         <i class="bi bi-x-lg"></i> Clear
     </a>
     {% endif %}

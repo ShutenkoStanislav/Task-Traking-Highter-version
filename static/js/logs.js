@@ -14,12 +14,32 @@ function applyFilters() {
     window.location.href = '?' + params.toString();
 }
 
-const filterCategory = document.getElementById('filterCategory')
-const filterActor = document.getElementById('filterActor')
-const filterDateFrom = document.getElementById('filterDateFrom')
-const filterDateTo = document.getElementById('filterDateTo')
+function setCategory(value, label) {
+    document.getElementById('filterCategory').value = value;
+    document.getElementById('categoryLabel').textContent = label;
+    applyFilters();
+}
 
-if (filterCategory) filterCategory.addEventListener('change', applyFilters);
-if (filterActor) filterActor.addEventListener('change', applyFilters);
-if (filterDateFrom) filterDateFrom.addEventListener('change', applyFilters);
-if (filterDateTo) filterDateTo.addEventListener('change', applyFilters);
+function setActor(value, label) {
+    document.getElementById('filterActor').value = value;
+    document.getElementById('actorLabel').textContent = label;
+    applyFilters();
+}
+
+
+const dateFrom = document.getElementById('filterDateFrom');
+const dateTo   = document.getElementById('filterDateTo');
+
+if (dateFrom) {
+    flatpickr(dateFrom, {
+        dateFormat: "Y-m-d",
+        onChange: function() { applyFilters(); }
+    });
+}
+
+if (dateTo) {
+    flatpickr(dateTo, {
+        dateFormat: "Y-m-d",
+        onChange: function() { applyFilters(); }
+    });
+}
