@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
-from task_app.models import Workspace, WorkspaceMember, Box, Folder, WorkspaceInvite, WorkspaceLog
+from task_app.models import Workspace, WorkspaceMember, Box, Folder, WorkspaceInvite, WorkspaceLog, Task
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from workspace_app.forms import BoxForm
@@ -13,6 +13,8 @@ import json
 from django.db.models import Case, When, IntegerField
 from django.http import Http404
 from django.utils.dateparse import parse_date
+from django.utils import timezone
+from datetime import timedelta
 
 
 class WorkspaceDetailView(LoginRequiredMixin, DetailView):
@@ -115,6 +117,56 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
                 "date_to": date_to,
             }
 
+        if context['tab'] == 'activity':
+
+            filter_user_id = self.request.GET.get("member", "")
+
+            done_tasks = Task.objects.filter(
+                workspace=self.object,
+                status="done",
+                completed_at__isnull=False,
+            )
+
+
+            if filter_user_id and context['user_role'] == 'owner':
+                done_tasks = done_tasks.filter(creator_id=filter_user_id)
+            elif context['user_role'] == 'member' or context['user_role'] == 'admin':
+                pass
+
+            last_task = done_tasks.order_by("-completed_at").first()
+
+            if last_task:
+                lask_date = last_task.completed_at.date()
+            else:
+                last_date = timezone.now().date()
+
+
+            end_date = last_date + timedelta(days=20)
+            start_date = end_date - timedelta(days=90)
+
+            counts = {}
+            for task in done_tasks.filter(
+                completed_at__date__gte=start_date,
+                completed_at__date__lte=end_date,
+            ).values_list("completed_at__date", flat=True):
+                key = task.isoformat()
+                counts[key] = counts.get(key, 0) + 1
+
+            today = timezone.now().date()
+            week_start = today - timedelta(days=today.weekday())
+            weekly_count = sum(
+                v for k, v in counts.items()
+                if k >= week_start.isoformat()
+            )
+
+            context["activity_date"] = json.dumps(counts)
+            context["activity_start"] = start_date.isoformat()
+            context["activity_end"] = end_date.isoformat()
+            context["weekly_count"] = weekly_count
+            context["activity_member"] = filter_user_id
+
+
+
         return context
 
 
@@ -138,10 +190,7 @@ def workspace_create_view(request):
             )
             return redirect('workspace:workspace_detail', pk=workspace.pk)
     return redirect('tasks:task_list')
-
-
-
-    
+  
 
 class WorkspaceDeleteView(LoginRequiredMixin ,DeleteView):
     model = Workspace  

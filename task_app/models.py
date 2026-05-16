@@ -308,6 +308,7 @@ class Task(models.Model):
                 default=None)
     
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    completed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.title

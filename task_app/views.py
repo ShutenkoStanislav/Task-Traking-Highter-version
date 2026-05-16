@@ -11,6 +11,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from workspace_app.forms import WorkspaceForm
+from django.utils import timezone
 
 
 from django.contrib.auth import login
@@ -159,6 +160,7 @@ class TaskCompleteView(LoginRequiredMixin,  View):
         
         old_status = task.status
         task.status = "done"
+        task.completed_at = timezone.now()
         task.save()
 
         if task.workspace:
