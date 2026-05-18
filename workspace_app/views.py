@@ -128,15 +128,20 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
             )
 
 
-            if filter_user_id and context['user_role'] == 'owner':
-                done_tasks = done_tasks.filter(creator_id=filter_user_id)
-            elif context['user_role'] == 'member' or context['user_role'] == 'admin':
-                pass
+            if context['user_role'] == 'owner':
+                if filter_user_id:
+                    done_tasks = done_tasks.filter(creator_id=filter_user_id)
+            else:
+                if filter_user_id:
+                    done_tasks = done_tasks.filter(creator_id=filter_user_id)
+
+
+
 
             last_task = done_tasks.order_by("-completed_at").first()
 
             if last_task:
-                lask_date = last_task.completed_at.date()
+                last_date = last_task.completed_at.date()
             else:
                 last_date = timezone.now().date()
 
@@ -159,7 +164,7 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
                 if k >= week_start.isoformat()
             )
 
-            context["activity_date"] = json.dumps(counts)
+            context["activity_data"] = json.dumps(counts)
             context["activity_start"] = start_date.isoformat()
             context["activity_end"] = end_date.isoformat()
             context["weekly_count"] = weekly_count

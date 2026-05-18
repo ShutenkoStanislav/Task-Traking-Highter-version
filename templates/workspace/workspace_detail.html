@@ -82,7 +82,7 @@
             {% elif tab == 'logs' and user_role == 'owner' %}
                 {% include 'workspace/logs_tab.html' %}
             {% elif tab == 'activity' %}
-                <p>Activity content</p>
+                {% include 'workspace/activity_tab.html' %}
             {% endif %} 
         </div>
     </div>

@@ -1,0 +1,75 @@
+<br>
+<div class="d-flex aling-items-center justify-content-between">
+    <h5><span id="weeklyCount">{{ weekly_count }}</span> task{{ weekly_count|pluralize}} complete this week</h5>
+
+    {% if user_role == 'owner' %}
+    <div class="dropdown">
+        <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn custom_priorety_select_btn_lg shadow_custom_dropdown"
+            type="button" data-bs-toggle="dropdown">
+
+        <span id="activityMemberLabel">
+            {% if activity_member %}
+                {% for m in members %}
+                    {% if m.member.pk|stringformat:"s" == activity_member %}
+                        {{ m.member.username}}
+                    {% endif %}  
+                {% endfor %}
+            {% else %}All members{% endif %}
+        </span>
+        </button>
+        <ul class="dropdown-menu shadow_custom_dropdown custom_priorety_select_menu">
+            <li><a class="dropdown-item rounded-3" href="?tab=activity">Team</a></li>
+            {% for m in members %}
+            <li>
+                <a class="dropdown-item rounded-3" href="?tab=activity&member={{ m.member.pk }}">
+                    {{ m.member.username }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% else %}
+    <div class="dropdown">
+        <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn shadow_custom_dropdown" type="button" data-bs-toggle="dropdown">
+            <span id="activityMemberLabel">
+                {% if activity_member %}All workspace{% else %}Me{% endif %}
+            </span>
+        </button>
+        <ul class="dropdown-menu shadow_custom_dropdown custom_priorety_select_menu">
+            <li><a class="dropdown-item rounded-3" href="?tab=activity&member={{ request.user.pk }}">Me</a></li>
+            <li><a class="dropdown-item rounded-3" href="?tab=activity">All workspace</a></li>
+        </ul>
+    </div>
+    {% endif %} 
+</div>
+<hr class="m-0 mb-3">
+
+<div style="overflow-x: auto;">
+    <div id="activityCalendar" style="min-width: 600px;"></div>
+</div>
+
+<div class="d-flex aling-items-center gap-2 mt-3">
+    <small class="text-muted" style="font-size: 20px;">Less</small>
+    <div style="width:28px;height:28px;border-radius:3px;background:#ebedf0;border:1px solid #e0e0e0;"></div>
+    <div style="width:28px;height:28px;border-radius:3px;background:#c6e48b;"></div>
+    <div style="width:28px;height:28px;border-radius:3px;background:#7bc96f;"></div>
+    <div style="width:28px;height:28px;border-radius:3px;background:#239a3b;"></div>
+    <div style="width:28px;height:28px;border-radius:3px;background:#196127;"></div>
+    <small class="text-muted" style="font-size: 20px;">More</small> 
+</div>
+
+<script>
+    {% if activity_data %}
+    const activityData = {{ activity_data|safe }};
+    const activityStart = "{{ activity_start }}";
+    const activityEnd = "{{ activity_end }}";
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const calendar = document.getElementById("activityCalendar");
+        if (calendar) {
+            renderActivityCalendar(activityData, activityStart, activityEnd);
+        }
+    });
+    {% endif %}
+</script>
