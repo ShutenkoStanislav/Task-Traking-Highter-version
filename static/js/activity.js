@@ -11,7 +11,10 @@ function renderActivityCalendar(activityData, startDateStr, endDateStr) {
     }
 
     function formatDate(date) {
-        return date.toISOString().split("T")[0];
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`
     }
 
     const MOUTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -39,11 +42,11 @@ function renderActivityCalendar(activityData, startDateStr, endDateStr) {
     let svg = `<svg width="${svgW}" height="${svgH}" xmlns="http://www.w3.org/2000/svg">`;
   
     DAYS.forEach((d, i) => {
-        if (d) {
-            svg += `<text x="0" y="${TOP + i * (CELL + GAP) + CELL - 3}"
-                font-size="14" fill="#767676" font-family="inherit">${d}</text>`;
+    if (d) {
+        svg += `<text x="0" y="${TOP + i * (CELL + GAP) + CELL / 2 + 5}"
+            font-size="14" font-weight="600" fill="#555" font-family="inherit">${d}</text>`;
         }
-    });
+    }); 
 
     let lastMonth = -1;
     days.forEach((date, idx) => {

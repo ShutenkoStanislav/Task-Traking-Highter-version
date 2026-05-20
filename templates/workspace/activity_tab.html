@@ -1,5 +1,5 @@
 <br>
-<div class="d-flex aling-items-center justify-content-between">
+<div class="d-flex align-items-center justify-content-between mt-2 mb-2">
     <h5><span id="weeklyCount">{{ weekly_count }}</span> task{{ weekly_count|pluralize}} complete this week</h5>
 
     {% if user_role == 'owner' %}
@@ -18,7 +18,7 @@
         </span>
         </button>
         <ul class="dropdown-menu shadow_custom_dropdown custom_priorety_select_menu">
-            <li><a class="dropdown-item rounded-3" href="?tab=activity">Team</a></li>
+            <li><a class="dropdown-item rounded-3 fw-bold" href="?tab=activity">Workspace</a></li>
             {% for m in members %}
             <li>
                 <a class="dropdown-item rounded-3" href="?tab=activity&member={{ m.member.pk }}">
@@ -31,14 +31,15 @@
 
     {% else %}
     <div class="dropdown">
-        <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn shadow_custom_dropdown" type="button" data-bs-toggle="dropdown">
+        <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn custom_priorety_select_btn_lg shadow_custom_dropdown"
+            type="button" data-bs-toggle="dropdown">
             <span id="activityMemberLabel">
-                {% if activity_member %}All workspace{% else %}Me{% endif %}
+                {% if activity_member %} {{ request.user.username }} {% else %}Workspace{% endif %}
             </span>
         </button>
         <ul class="dropdown-menu shadow_custom_dropdown custom_priorety_select_menu">
-            <li><a class="dropdown-item rounded-3" href="?tab=activity&member={{ request.user.pk }}">Me</a></li>
-            <li><a class="dropdown-item rounded-3" href="?tab=activity">All workspace</a></li>
+            <li><a class="dropdown-item rounded-3 fw-bold" href="?tab=activity">Workspace</a></li>
+            <li><a class="dropdown-item rounded-3" href="?tab=activity&member={{ request.user.pk }}">{{ request.user.username }}</a></li>  
         </ul>
     </div>
     {% endif %} 
