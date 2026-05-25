@@ -50,6 +50,24 @@ document.addEventListener('show.bs.modal', function(event) {
     const titleDiv = document.getElementById('task-title-wrap');
     const contDiv = document.getElementById('task-cont-wrap');
 
+    const autoFolderId = window.CURRENT_FOLDER_ID;
+    const autoBoxId = window.CURRENT_BOX_ID;
+    const autoWorkspaceId = window.CURRENT_WORKSPACE_ID;
+
+    if (autoFolderId) {
+
+        document.getElementById('task-workspace-hidden').value = autoWorkspaceId || '';
+        document.getElementById('task-folder-hidden').value = autoFolderId;
+
+
+        taskFields?.classList.add('d-none');
+        if (titleDiv) titleDiv.style.width = '100%';
+        if (contDiv) contDiv.style.width = '100%';
+
+        return;
+
+    }
+
     if (!isWorkspace) {
         taskFields?.classList.add('d-none');
         if (titleDiv) titleDiv.style.width = '100%';

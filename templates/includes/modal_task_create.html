@@ -11,7 +11,7 @@
                     {% csrf_token %}
 
                     {% if current_folder %}
-                        <input type="hidden" name="folder" value="{{ current_folder.id }}">
+                        <input type="hidden" id="task-current-folder" value="{{ current_folder.id }}">
                     {% endif %}
 
                     <input type="hidden" name="workspace" id="task-workspace-hidden" value="">

@@ -12,7 +12,7 @@
     <div class="p-4" style="flex: 1 1 0; min-width: 0; position: relative;">
         <div style="position: absolute; top: 16px; right: 16px;">
             <a class="btn" data-bs-toggle="modal" data-bs-target="#WorkspaceModal">
-                <i class="bi bi-plus-lg"></i> Add workspace
+                <i class="bi bi-plus-lg"></i> Create workspace
             </a>
         </div>
         
@@ -45,6 +45,13 @@
         </div> 
     </div>
 </div>
+
+<script>
+    var WORKSPACE_BOXES = {{ boxes_json|default:'[]'|safe }};
+    var CURRENT_FOLDER_ID = {{ current_folder.id|default:'null' }};
+    var CURRENT_BOX_ID = {{ current_folder.box.id|default:'null' }};
+    var CURRENT_WORKSPACE_ID = {{ workspace.id|default:'null'}};
+</script>
 
 {% include 'workspace/modal_workspace_create.html' %}  
 

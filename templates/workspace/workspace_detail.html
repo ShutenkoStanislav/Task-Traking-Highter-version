@@ -92,7 +92,10 @@
     {% include 'workspace/modal_invite.html' %}
 
     <script>
-        var WORKSPACE_BOXES = {{ boxes_json|safe }};
+        var WORKSPACE_BOXES = {{ boxes_json|default:'[]'|safe }};
+        var CURRENT_FOLDER_ID = {{ current_folder.id|default:'null' }};
+        var CURRENT_BOX_ID = {{ current_folder.box.id|default:'null' }};
+        var CURRENT_WORKSPACE_ID = {{ workspace.id|default:'null'}};
     </script>
    
 {% endblock %}

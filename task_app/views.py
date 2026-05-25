@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from task_app import models
-from .models import Folder, WorkspaceLog
+from .models import Folder, WorkspaceLog, Box
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -12,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from workspace_app.forms import WorkspaceForm
 from django.utils import timezone
+import json
+from django.core.exceptions import PermissionDenied
 
 
 from django.contrib.auth import login
@@ -50,10 +52,43 @@ class TaskListView(LoginRequiredMixin, ListView):
         context["folders"] = Folder.objects.filter(creator=self.request.user, box__isnull = True)
 
         folder_id = self.kwargs.get('folder_id')
-        if folder_id:
-            context['current_folder'] = get_object_or_404(Folder, id=folder_id, creator=self.request.user)
+        if folder_id:         
+            current_folder = get_object_or_404(Folder, id=folder_id)
+            context['current_folder'] = current_folder
+
+            if current_folder.box:
+                workspace = current_folder.workspace
+                is_member = workspace.members.filter(
+                    member=self.request.user,
+                    is_active=True
+                ).exists()
+                if not is_member:
+                    raise PermissionDenied
+            
+                context['workspace'] = workspace
+
+                
+                boxes = Box.objects.filter(workspace=workspace).prefetch_related('folders')
+                context['boxes_json'] = json.dumps([
+                    {
+                        'id': box.id,
+                        'name': box.name,
+                        'folders': [
+                            {'id': f.id, 'name': f.name}
+                            for f in box.folders.all()
+                        ]
+                    }
+                    for box in boxes
+                ])
+            else:
+                if current_folder.creator != self.request.user:
+                    raise PermissionDenied
+                context['boxes_json'] = '[]'
         else:
             context['current_folder'] = None
+            context['boxes_json'] = '[]'
+
+            
 
         context["form"] = TaskFilterForm(self.request.GET)
         context["task_form"] = TaskForm()
