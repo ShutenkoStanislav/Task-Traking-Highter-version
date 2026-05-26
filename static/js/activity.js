@@ -4,10 +4,10 @@ function renderActivityCalendar(activityData, startDateStr, endDateStr) {
 
     function getColor(count) {
         if (count === 0) return "#ebebf0";
-        if (count === 1) return "#c6e48b";
-        if (count === 4) return "#7bc96f";
-        if (count === 9) return "#239a3b";
-        return "#196127"  
+        if (count >= 9) return "#196127";
+        if (count >= 4) return "#239a3b";
+        if (count >= 1) return "#7bc96f";
+        return "#c6e48b";
     }
 
     function formatDate(date) {

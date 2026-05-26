@@ -58,28 +58,25 @@ class TaskListView(LoginRequiredMixin, ListView):
 
             if current_folder.box:
                 workspace = current_folder.workspace
-                is_member = workspace.members.filter(
-                    member=self.request.user,
-                    is_active=True
-                ).exists()
-                if not is_member:
-                    raise PermissionDenied
-            
                 context['workspace'] = workspace
+                context['workspace_boxes'] = Box.objects.filter(workspace=workspace).prefetch_related('folders')
 
-                
-                boxes = Box.objects.filter(workspace=workspace).prefetch_related('folders')
-                context['boxes_json'] = json.dumps([
-                    {
-                        'id': box.id,
-                        'name': box.name,
-                        'folders': [
-                            {'id': f.id, 'name': f.name}
-                            for f in box.folders.all()
-                        ]
-                    }
-                    for box in boxes
-                ])
+
+                if workspace:  
+                    boxes = Box.objects.filter(workspace=workspace).prefetch_related('folders')
+                    context['boxes_json'] = json.dumps([
+                        {
+                            'id': box.id,
+                            'name': box.name,
+                            'folders': [
+                                {'id': f.id, 'name': f.name}
+                                for f in box.folders.all()
+                            ]
+                        }
+                        for box in boxes
+                    ])
+                else:
+                    context['boxes_json'] = '[]'
             else:
                 if current_folder.creator != self.request.user:
                     raise PermissionDenied
