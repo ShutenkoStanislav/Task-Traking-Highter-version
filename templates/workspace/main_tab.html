@@ -10,12 +10,12 @@
                 <i class="bi bi-plus-lg"></i> Filter
             </button>
             <ul class="dropdown-menu shadow custom_priorety_select_menu_lg">
-                <li><a class="dropdown-item" href="#">
+                <li><a class="dropdown-item" href="#" onclick="sortBoxes('asc')">
                    <i class="bi bi-sort-alpha-down"></i> A-Z
                 </a>
                 </li>
 
-                <li><a class="dropdown-item" href="#">
+                <li><a class="dropdown-item" href="#" onclick="sortBoxes('desc')">
                     <i class="bi bi-sort-alpha-up-alt"></i> Z-A
                 </a>
                 </li>          
@@ -25,9 +25,9 @@
    
 </div>
 <hr class="m-0">
-<div style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
+<div id="boxes-container" style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
     {% for box in boxes %}
-        <div class="d-flex align-items-center p-3" style="cursor: pointer; user-select: none;" onclick="toggleBox({{ box.pk }})">
+        <div class="d-flex align-items-center p-3" data-box-id="{{ box.pk }}" data-name="{{ box.name }}" style="cursor: pointer; user-select: none;" onclick="toggleBox({{ box.pk }})">
             
             <i id="box-arrow-{{ box.pk }}" class="bi bi-caret-up-fill ms-2"></i>
 
