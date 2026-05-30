@@ -433,3 +433,23 @@ html, body {
     background-color: #f8f9fa;
     padding: 5px 10px;
 }
+
+
+/* custom search */
+
+.custom-search {
+    border: none;
+    border-radius: 12px;
+    background: #f0f0f0;
+    outline: none;
+    padding: 10px 16px;
+    font-size: 1rem;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s, background 0.2s;
+}
+
+.custom-search:focus {
+    background: #e8e8e8;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
