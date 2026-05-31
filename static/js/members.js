@@ -127,3 +127,71 @@
   
 
 })();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('workspace-search');
+    if (!searchInput) return;
+
+    const membersContainer = document.getElementById('members-container');
+    if (!membersContainer) return;
+
+    function highlightText(element, query) {
+        if (!element) return;
+        if (!element.dataset.originalHtml) {
+            element.dataset.originalHtml = element.innerHTML;
+        }
+        const originalHtml = element.dataset.originalHtml;
+        if (!query) {
+            element.innerHTML = originalHtml;
+            return;
+        }
+        const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+        element.innerHTML = originalHtml;
+        const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        const nodesToReplace = [];
+        while (node = walk.nextNode()) {
+            if (node.nodeValue.toLowerCase().includes(query)) {
+                nodesToReplace.push(node);
+            }
+        }
+        nodesToReplace.forEach(textNode => {
+            const span = document.createElement('span');
+            span.innerHTML = textNode.nodeValue.replace(regex, '<mark class="p-0 text-dark" style="background-color: rgba(255, 193, 7, 0.4); border-radius: 3px;">$1</mark>');
+            textNode.parentNode.replaceChild(span, textNode);
+        });
+    }
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const entries = membersContainer.querySelectorAll('[data-member-entry]');
+
+        entries.forEach(function(entry) {
+            const textEl = entry.querySelector('.ms-3');
+
+            if (query === '') {
+                entry.style.removeProperty('display');
+                highlightText(textEl, '');
+                return;
+            }
+
+            const text = entry.dataset.searchText.toLowerCase();
+            if (text.includes(query)) {
+                entry.style.removeProperty('display');
+                highlightText(textEl, query);
+            } else {
+                entry.style.setProperty('display', 'none', 'important');
+                highlightText(textEl, '');
+            }
+        });
+
+        membersContainer.querySelectorAll('hr').forEach(function(hr) {
+            const prev = hr.previousElementSibling;
+            if (prev && prev.style.display === 'none') {
+                hr.style.setProperty('display', 'none', 'important');
+            } else {
+                hr.style.removeProperty('display');
+            }
+        });
+    });
+});

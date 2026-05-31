@@ -4,17 +4,19 @@
 </div>
 <hr class="m-0">
 
-<div style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
+<div id="members-container" style="max-height: 500px; overflow-y: auto; overflow-x: hidden; padding-bottom: 140px;">
     {% for member in members %}
         <div class="d-flex align-items-center p-3"
-             style="position: relative; {% if user_role == 'owner' or user_role == 'admin' %}cursor: pointer;{% endif %}"
-             {% if user_role == 'owner' or user_role == 'admin' %}
+            data-member-entry
+            data-search-text="{{ member.member.username }} {{ member.role }}"
+            style="position: relative; {% if user_role == 'owner' or user_role == 'admin' %}cursor: pointer;{% endif %}"
+            {% if user_role == 'owner' or user_role == 'admin' %}
                 data-member-pk="{{ member.pk }}"
                 data-member-username="{{ member.member.username }}"
                 data-member-email="{{ member.member.email }}"
                 data-member-role="{{ member.role }}"
                 data-member-joined="{{ member.joined_at|date:'d M Y' }}"
-             {% endif %}>
+            {% endif %}>
 
             <i class="bi bi-person-circle ms-2" style="font-size: 2rem;"></i>
 
