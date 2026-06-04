@@ -13,8 +13,8 @@
         <div class="p-4" style="flex: 1 1 0; min-width: 0;">
             <h1><i class="bi bi-people"></i> {{workspace.name}}</h1>
             <br>
-            <div class="mb-3 mt-3" style="max-width: 800px;">
-                <input type="text" class="custom-search" id="workspace-search" placeholder="Search">
+            <div class="mb-3 mt-3" style="max-width: 800px; {% if tab == 'activity' %}visibility: hidden;{% endif %}">
+                <input type="text" class="custom-search" id="workspace-search" placeholder="Search...">
             </div>
 
             <div class="d-flex align-items-center" style="margin-left: 12%;">
