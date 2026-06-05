@@ -18,8 +18,12 @@
                 data-member-joined="{{ member.joined_at|date:'d M Y' }}"
             {% endif %}>
 
-            <i class="bi bi-person-circle ms-2" style="font-size: 2rem;"></i>
-
+            {% if member.member.profile.avatar %}
+                <img src="{{ member.member.profile.avatar.url }}"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-left: 8px;">
+            {% else %}
+                <i class="bi bi-person-circle ms-2" style="font-size: 2rem;"></i>
+            {% endif %}
             <div class="ms-3">
                 <h5 class="mb-0">{{ member.member.username }}</h5>
                 <small class="text-muted">

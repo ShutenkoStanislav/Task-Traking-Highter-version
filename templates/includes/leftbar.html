@@ -5,7 +5,13 @@
     <div class="flex-shrink-0">
         <div class="dropdown-center mb-3">
             <button class="btn btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle"></i>  {{ user.username }}
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}"
+                        style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
+                {% else %}
+                    <i class="bi bi-person-circle"></i>
+                {% endif %}
+                {{ user.username }}
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'tasks:profile' %}">Profile</a></li>

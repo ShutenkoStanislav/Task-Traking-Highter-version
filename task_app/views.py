@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from task_app import models
-from .models import Folder, WorkspaceLog, Box
+from .models import Folder, WorkspaceLog, Box, Profile
 from django.views.generic import ListView, DetailView, CreateView, View, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -14,6 +14,8 @@ from workspace_app.forms import WorkspaceForm
 from django.utils import timezone
 import json
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
 
 from django.contrib.auth import login
@@ -336,3 +338,10 @@ def profile_details(request):
 
     )
 
+@login_required
+def upload_avatar(request):
+    if request.method == 'POST' and request.FILES.get('avatar'):
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        profile.avatar = request.FILES['avatar']
+        profile.save()
+    return redirect('tasks:profile')

@@ -14,11 +14,26 @@
             <div class="d-flex flex-column align-items-center flex-shrink-0">
                 <h2 class="mb-3">{{ user.username }}</h2>
                 <a href="{% url 'tasks:task_list' %}">
-                    <i class="bi bi-person-circle" style="font-size: 150px; color: #222; transition: transform 0.2s;"
-                       onmouseover="this.style.transform='scale(1.05)'"
-                       onmouseout="this.style.transform='scale(1)'">
-                    </i>
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}"
+                            style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; transition: transform 0.2s;"
+                            onmouseover="this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                    {% else %}
+                        <i class="bi bi-person-circle" style="font-size: 150px; color: #222; transition: transform 0.2s;"
+                        onmouseover="this.style.transform='scale(1.05)'"
+                        onmouseout="this.style.transform='scale(1)'">
+                        </i>
+                    {% endif %}
                 </a>
+                <form method="post" action="{% url 'tasks:avatar-upload' %}" enctype="multipart/form-data" class="mt-3">
+                    {% csrf_token %}
+                    <label class="bt btn-sm btn-outline-secondary" style="cursor: pointer;">
+                        <i class="bi bi-camera"></i> Change photo
+                        <input type="file" name="avatar" accept="image/*" style="display: none;"
+                            onchange="this.form.submit()">
+                    </label>
+                </form>
             </div>
 
             <div style="flex: 1;">

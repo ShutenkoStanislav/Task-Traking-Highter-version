@@ -27,6 +27,8 @@ urlpatterns = [
     
     path('profile/', views.profile_details, name="profile"),
 
+    path('avatar/upload/', views.upload_avatar, name='avatar-upload'),
+
     
     
 ]
