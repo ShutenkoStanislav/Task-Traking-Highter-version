@@ -38,7 +38,7 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
         context['members'] = WorkspaceMember.objects.filter(
             workspace=self.object,
             is_active=True
-        ).select_related('member').annotate(
+        ).select_related('member', 'member__profile').annotate(
             role_order=Case(
                 When(role='owner', then=0),
                 When(role='admin', then=1),
@@ -47,6 +47,11 @@ class WorkspaceDetailView(LoginRequiredMixin, DetailView):
                 output_field=IntegerField()
             )
         ).order_by('role_order')
+        
+        context['owner_candidates'] = WorkspaceMember.objects.filter(
+            workspace=self.object,
+            is_active=True,
+        ).exclude(role='owner').select_related('member', 'member__profile')
 
         context['folders'] = Folder.objects.filter(
             creator=self.request.user,
@@ -197,14 +202,14 @@ def workspace_create_view(request):
     return redirect('tasks:task_list')
   
 
-class WorkspaceDeleteView(LoginRequiredMixin ,DeleteView):
-    model = Workspace  
+class WorkspaceDeleteView(LoginRequiredMixin, DeleteView):
+    model = Workspace
 
     def get_queryset(self):
         return Workspace.objects.filter(owner=self.request.user)
     
     def get_success_url(self):
-        return reverse_lazy('workspace:workspace_detail')
+        return reverse_lazy('tasks:task_list')
     
 
 class WorkspaceUpdateView(LoginRequiredMixin,  UpdateView):
@@ -595,3 +600,93 @@ def promote_member(request, workspace_pk, member_pk):
     })
 
         
+@login_required
+def workspace_settings(request, pk):
+    if request.method != "POST":
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    workspace = get_object_or_404(Workspace, pk=pk, owner=request.user)
+    
+    name = request.POST.get('name', '').strip()
+    if name:
+        workspace.name = name
+    
+    if request.FILES.get('icon'):
+        workspace.icon = request.FILES['icon']
+    
+    workspace.save()
+    return redirect('workspace:workspace_detail', pk=workspace.pk)
+
+
+@login_required
+def workspace_leave(request, pk):
+    if request.method != "POST":
+        return redirect('workspace:workspace_detail', pk=pk)
+    
+    workspace = get_object_or_404(Workspace, pk=pk)
+    
+    member = get_object_or_404(
+        WorkspaceMember,
+        workspace=workspace,
+        member=request.user,
+        is_active=True
+    )
+    
+    if member.role == 'owner':
+        return redirect('workspace:workspace_detail', pk=pk)
+    
+    member.is_active = False
+    member.save(update_fields=['is_active'])
+
+    WorkspaceLog.objects.create(
+        workspace=workspace,
+        actor=request.user,
+        action="member_removed",
+        meta={"member": request.user.username}
+    )
+
+    return redirect('tasks:task_list')
+
+
+@login_required
+def workspace_transfer_leave(request, pk):
+    if request.method != "POST":
+        return redirect('workspace:workspace_detail', pk=pk)
+    
+    workspace = get_object_or_404(Workspace, pk=pk, owner=request.user)
+    
+    new_owner_member_pk = request.POST.get('new_owner')
+    if not new_owner_member_pk:
+        return redirect('workspace:workspace_detail', pk=pk)
+    
+    new_owner_member = get_object_or_404(
+        WorkspaceMember,
+        pk=new_owner_member_pk,
+        workspace=workspace,
+        is_active=True
+    )
+    
+    
+    old_member = WorkspaceMember.objects.get(
+        workspace=workspace,
+        member=request.user
+    )
+    old_member.role = 'member'
+    old_member.is_active = False
+    old_member.save(update_fields=['role', 'is_active'])
+
+   
+    new_owner_member.role = 'owner'
+    new_owner_member.save(update_fields=['role'])
+    
+    workspace.owner = new_owner_member.member
+    workspace.save(update_fields=['owner'])
+
+    WorkspaceLog.objects.create(
+        workspace=workspace,
+        actor=request.user,
+        action="member_removed",
+        meta={"member": request.user.username}
+    )
+
+    return redirect('tasks:task_list')

@@ -1,0 +1,17 @@
+<div class="modal fade" id="DeleteWorkspaceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content custom_modal_shadow">
+            <div class="modal-body text-center p-4">
+                <h2>Delete workspace?</h2>
+                <p class="text-muted mb-4">Are you sure you want to delete <strong>{{ workspace.name }}</strong>? This action cannot be undone.</p>
+                <form method="post" action="{% url 'workspace:workspace_delete' workspace.pk %}">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

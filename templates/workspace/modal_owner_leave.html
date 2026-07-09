@@ -1,0 +1,43 @@
+<div class="modal fade" id="OwnerLeaveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom_modal_shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">Transfer ownership</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'workspace:workspace_transfer_leave' workspace.pk %}">
+                {% csrf_token %}
+                <div class="modal-body p-4" style="min-height: 200px;">
+                    <p class="text-muted">Select new owner before leaving:</p>
+                    <div class="d-flex flex-column gap-2" id="owner-candidates">
+                        {% for member in owner_candidates %}
+                            <label class="d-flex align-items-center gap-3 p-2 rounded-3"
+                                style="cursor: pointer; background: #f5f5f5; display: flex !important;">
+                                <input type="radio" name="new_owner" value="{{ member.pk }}"
+                                    onchange="document.getElementById('transfer-confirm-btn').disabled = false;">
+                                {% with profile=member.member.profile %}
+                                    {% if profile.avatar %}
+                                        <img src="{{ profile.avatar.url }}"
+                                            style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <i class="bi bi-person-circle" style="font-size: 1.8rem;"></i>
+                                    {% endif %}
+                                {% endwith %}
+                                <span class="fw-bold">{{ member.member.username }}</span>
+                                <small class="text-muted ms-auto">{{ member.role }}</small>
+                            </label>
+                        {% empty %}
+                            <p class="text-muted">No members found</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" id="transfer-confirm-btn" class="btn btn-danger" disabled>
+                        Transfer & Leave
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

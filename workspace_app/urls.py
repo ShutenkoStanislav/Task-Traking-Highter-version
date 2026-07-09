@@ -24,4 +24,8 @@ urlpatterns = [
 
     path('workspace/<int:workspace_pk>/kick/<int:member_pk>/', views.kick_member, name='kick_member'),
     path('workspace/<int:workspace_pk>/promote/<int:member_pk>/', views.promote_member, name='promote_member'),
+
+    path('workspace/<int:pk>/settings/', views.workspace_settings, name='workspace_settings'),
+    path('workspace/<int:pk>/leave/', views.workspace_leave, name='workspace_leave'),
+    path('workspace/<int:pk>/transfer-leave/', views.workspace_transfer_leave, name='workspace_transfer_leave'),
 ]

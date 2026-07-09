@@ -5,7 +5,7 @@
     <div class="flex-shrink-0">
         <div class="dropdown-center mb-3">
             <button class="btn btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {% if user.profile.avatar %}
+                {% if user.profile and user.profile.avatar %}
                     <img src="{{ user.profile.avatar.url }}"
                         style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; vertical-align: middle;">
                 {% else %}
@@ -122,12 +122,16 @@
             <div class="d-flex flex-column align-items-start gap-3 ps-0">
                 {% for workspace in workspaces %}
                     <div class="folder-row d-flex align-items-center justify-content-between p-2 rounded">
-                        <a
-                        href="{% url 'workspace:workspace_detail' workspace.pk %}"
+                        <a href="{% url 'workspace:workspace_detail' workspace.pk %}"
                         class="btn btn-lg ps-0"
-                        style="font-size: 32px; font-weight: 600;"
-                        >
-                        {{ workspace.name }}  <i class="bi bi-people"></i>
+                        style="font-size: 32px; font-weight: 600;">
+                            {% if workspace.icon %}
+                                <img src="{{ workspace.icon.url }}"
+                                    style="width: 35px; height: 35px; border-radius: 8px; object-fit: cover; vertical-align: middle;">
+                            {% else %}
+                                <i class="bi bi-people"></i>
+                            {% endif %}
+                            {{ workspace.name }}
                         </a>
                     </div>
                 {% endfor %}

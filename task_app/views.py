@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 
 
+
 from django.contrib.auth import login
 
 
@@ -306,7 +307,11 @@ class FolderDeleteView(LoginRequiredMixin ,DeleteView):
 class CustomLoginView(LoginView):
     template_name = "auth/login.html"
     redirect_authenticated_user = True
-        
+
+    def form_valid(self, form):
+        user = form.get_user()
+        Profile.objects.get_or_create(user=user)
+        return super().form_valid(form)
 
     
 class CustomLogoutView(LogoutView):
