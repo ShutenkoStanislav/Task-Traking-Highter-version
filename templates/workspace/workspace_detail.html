@@ -123,6 +123,7 @@
         var CURRENT_FOLDER_ID = {{ current_folder.id|default:'null' }};
         var CURRENT_BOX_ID = {{ current_folder.box.id|default:'null' }};
         var CURRENT_WORKSPACE_ID = {{ workspace.id|default:'null'}};
+        var CURRENT_USER_ID = '{{ request.user.pk }}';
     </script>
    
 {% endblock %}

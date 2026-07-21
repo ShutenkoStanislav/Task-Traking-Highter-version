@@ -1,21 +1,25 @@
 <div class="task-scroling">
-    <li class="list-group-item  border-0 p-1 bg-transparent" style="min-height: 80px;"> 
+    <li class="list-group-item border-0 p-1 bg-transparent" style="min-height: 80px;"> 
         <div class="task-area d-flex align-items-center p-3">
-            <div class="form-check ms-2" style="z-index: 10;"> 
-                <input  class="form-check-input task-complete-input"
-                        type="checkbox"
-                        name="checkboxDefault"
-                        id="checkboxTask{{ task.pk }}" 
-                        data-url="{% url 'tasks:task-complete' task.pk %}"
-                        style="transform: scale(1.5); cursor: pointer;">
-                <label class="form-check-label" for="checkboxTask{{ task.pk }}"></label>
+            <div class="form-check ms-2" style="z-index: 10;">
+                 {% if not task.workspace or user_role == 'owner' or user_role == 'admin' or task.creator == request.user %}
+                    <input class="form-check-input task-complete-input"
+                            type="checkbox"
+                            name="checkboxDefault"
+                            id="checkboxTask{{ task.pk }}" 
+                            data-url="{% url 'tasks:task-complete' task.pk %}"
+                            style="transform: scale(1.5); cursor: pointer;">
+                    <label class="form-check-label" for="checkboxTask{{ task.pk }}"></label>
+                {% else %}
+                    <input class="form-check-input"
+                            type="checkbox"
+                            disabled
+                            style="transform: scale(1.5); cursor: not-allowed; opacity: 0.4;">
+                {% endif %}
             </div>
         
             <div class="flex-grow-1 p-3">
                 <p class="task-date text-muted mb-1 small">{{ task.due_date }}</p>
-
-                
-
                 <h5 class="mb-1">
                     {% if task.priority == 'high' %}
                         <span class="text-danger fw-bold fs-5">!!!</span>   
@@ -26,10 +30,6 @@
                     {% endif %}
                     {{ task.title }}
                 </h5>
-
-                
-
-
                 <p class="text-secondary mb-0 text-truncate" style="max-width: 1050px;">{{ task.description }}</p>
             </div>
 
@@ -40,12 +40,12 @@
                 data-task-id="{{ task.pk }}"
                 data-title="{{ task.title }}"
                 data-description="{{ task.description }}"
-                data-priority="{{ task.priority }}">
+                data-priority="{{ task.priority }}"
+                data-user-role="{{ user_role|default:'' }}"
+                data-workspace="{{ task.workspace_id|default:'' }}"
+                data-task-creator="{{ task.creator.pk }}">
             </button>
         </div>
     </li>
 </div>
-<hr class="m-0">  
-
-
-   
+<hr class="m-0">

@@ -97,10 +97,20 @@
                     <i class="bi bi-folder-plus" style="color: #5a9e6f;"></i>
                 {% elif log.action == 'folder_deleted' %}
                     <i class="bi bi-folder-x" style="color: #c0665a;"></i>
-                 {% elif log.action == 'box_created' %}
+                {% elif log.action == 'box_created' %}
                     <i class="bi bi-box" style="color: #5a9e6f;"></i>
                 {% elif log.action == 'box_deleted' %}
                     <i class="bi bi-box" style="color: #c0665a;"></i>
+                {% elif log.action == 'workspace_name_changed' %}
+                    <i class="bi bi-pencil" style="color: #5a7ec0;"></i>
+                {% elif log.action == 'workspace_icon_changed' %}
+                    <i class="bi bi-image" style="color: #5a7ec0;"></i>
+                {% elif log.action == 'workspace_owner_changed' %}
+                    <i class="bi bi-arrow-left-right" style="color: #c0a25a;"></i>
+                {% elif log.action == 'box_name_changed' %}
+                    <i class="bi bi-pencil" style="color: #5a7ec0;"></i>
+                {% elif log.action == 'box_color_changed' %}
+                    <i class="bi bi-palette" style="color: #5a7ec0;"></i>
                 {% endif %}
                 
             </div>
@@ -147,6 +157,26 @@
 
                     {% elif log.action == 'box_deleted' %}
                         deleted box <span class="text-muted">«{{ log.meta.box_name }}»</span>
+
+                    {% elif log.action == 'workspace_name_changed' %}
+                        changed workspace name from <span class="badge bg-light text-dark border">{{ log.meta.from }}</span>
+                        to <span class="badge bg-light text-dark border">{{ log.meta.to }}</span>
+
+                    {% elif log.action == 'workspace_icon_changed' %}
+                        changed workspace icon
+
+                    {% elif log.action == 'workspace_owner_changed' %}
+                        transferred ownership from <span class="text-muted">{{ log.meta.from }}</span>
+                        to <span class="text-muted">{{ log.meta.to }}</span>
+
+                    {% elif log.action == 'box_name_changed' %}
+                        changed box <span class="text-muted">«{{ log.meta.box_name }}»</span> name
+                        to <span class="badge bg-light text-dark border">{{ log.meta.to }}</span>
+
+                    {% elif log.action == 'box_color_changed' %}
+                        changed color of box <span class="text-muted">«{{ log.meta.box_name }}»</span>
+
+                     
 
                     {% endif %}
 

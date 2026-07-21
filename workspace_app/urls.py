@@ -13,7 +13,7 @@ urlpatterns = [
     path('box/<int:pk>/', views.BoxDetailView.as_view(), name="box_detail"),
     path('workspace/<int:workspace_pk>/box/create/', views.BoxCreateView.as_view(), name="box_create"),
     path('box/<int:pk>/delete/', views.BoxDeleteView.as_view(), name="box_delete"),
-    path('box/<int:pk>/update/', views.BoxUpdateView.as_view(), name="box_update"),
+    path('box/<int:pk>/update/', views.box_update, name="box_update"),
 
     path('folder/create/', views.folder_create_view, name='folder-create'),
     path('workspace/<int:pk>/folder/<int:folder_id>/', task_view.TaskListView.as_view(), name='folder-detail'),

@@ -16,9 +16,7 @@ import json
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-
-
-
+from task_app.models import WorkspaceMember
 from django.contrib.auth import login
 
 
@@ -29,24 +27,32 @@ class TaskListView(LoginRequiredMixin, ListView):
     template_name = "tasks/task_list.html"
 
     def get_queryset(self):
-        queryset = models.Task.objects.filter(creator=self.request.user).prefetch_related('comments')
-
         folder_id = self.kwargs.get('folder_id')
 
         if folder_id:
-            queryset = queryset.filter(folder_id=folder_id)
+            folder = get_object_or_404(Folder, id=folder_id)
+            
+            if folder.box:   
+                queryset = models.Task.objects.filter(
+                    folder_id=folder_id
+                ).prefetch_related('comments')
+            else:
+                queryset = models.Task.objects.filter(
+                    creator=self.request.user,
+                    folder_id=folder_id
+                ).prefetch_related('comments')
         else:
-            queryset = queryset.filter(folder__isnull=True)
-        
-        status = self.request.GET.get('status')
+            queryset = models.Task.objects.filter(
+                creator=self.request.user,
+                folder__isnull=True
+            ).prefetch_related('comments')
 
+        status = self.request.GET.get('status')
         if status:
             queryset = queryset.filter(status__iexact=status)
         else:
-           queryset = queryset.exclude(status__iexact="done")
+            queryset = queryset.exclude(status__iexact="done")
 
-
-        
         return queryset.order_by("due_date")
         
     def get_context_data(self, **kwargs):
@@ -64,6 +70,15 @@ class TaskListView(LoginRequiredMixin, ListView):
                 context['workspace'] = workspace
                 context['workspace_boxes'] = Box.objects.filter(workspace=workspace).prefetch_related('folders')
 
+                if workspace:
+                    try:
+                        context['user_role'] = models.WorkspaceMember.objects.get(
+                            workspace=workspace,
+                            member=self.request.user,
+                            is_active = True
+                        ).role
+                    except models.WorkspaceMember.DoesNotExist:
+                        context['user_role'] = None
 
                 if workspace:  
                     boxes = Box.objects.filter(workspace=workspace).prefetch_related('folders')
@@ -96,8 +111,16 @@ class TaskListView(LoginRequiredMixin, ListView):
 
         context["comment_form"] = CommentForm()
 
-        context["comments"] = models.Comment.objects.filter(
-            task__creator=self.request.user).select_related('creator', 'task')
+        current_folder = context.get('current_folder')
+
+        if current_folder and current_folder.box:
+            context["comments"] = models.Comment.objects.filter(
+                task__folder_id=folder_id
+            ).select_related('creator', 'task')
+        else:
+            context["comments"] = models.Comment.objects.filter(
+                task__creator=self.request.user
+            ).select_related('creator', 'task')
         
         context['workspaces'] = models.Workspace.objects.filter(
             members__member=self.request.user,
@@ -113,7 +136,13 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
     template_name = "tasks/task_detail.html"
 
     def get_queryset(self):
-        return models.Task.objects.filter(creator=self.request.user)
+        own_tasks = models.Task.objects.filter(creator=self.request.user)
+        
+        workspace_tasks = models.Task.objects.filter(
+            workspace__members__member=self.request.user,
+            workspace__members__is_active=True
+        )
+        return (own_tasks | workspace_tasks).distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -189,9 +218,19 @@ class FolderCreateView(LoginRequiredMixin, CreateView):
 
   
     
-class TaskCompleteView(LoginRequiredMixin,  View):
+class TaskCompleteView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        task = get_object_or_404(models.Task, pk=self.kwargs.get("pk"), creator=self.request.user)
+        pk = self.kwargs.get("pk")
+        
+        task = models.Task.objects.filter(pk=pk, creator=request.user).first()
+        
+        if not task:
+            task = get_object_or_404(
+                models.Task,
+                pk=pk,
+                workspace__members__member=request.user,
+                workspace__members__is_active=True
+            )
         
         old_status = task.status
         task.status = "done"
@@ -201,19 +240,14 @@ class TaskCompleteView(LoginRequiredMixin,  View):
         if task.workspace:
             WorkspaceLog.objects.create(
                 workspace=task.workspace,
-                actor = request.user,
+                actor=request.user,
                 action="task_status_changed",
                 meta={"task_title": task.title,
                       "from": old_status,
-                      "to": "done",
-                      }
+                      "to": "done"}
             )    
 
         return JsonResponse({'status': 'success'})
-    
-    def get_object(self):
-        task_id = self.kwargs.get("pk")
-        return get_object_or_404(models.Task, pk=task_id)
 
     
 class TaskUpdateView(LoginRequiredMixin,  UpdateView):
@@ -240,7 +274,15 @@ class TaskUpdateView(LoginRequiredMixin,  UpdateView):
         return response
 
     def get_queryset(self):
-        return models.Task.objects.filter(creator=self.request.user)
+        own_tasks = models.Task.objects.filter(creator=self.request.user)
+        
+        workspace_tasks = models.Task.objects.filter(
+            workspace__members__member=self.request.user,
+            workspace__members__is_active=True,
+            workspace__members__role__in=['owner', 'admin']
+        )
+        
+        return (own_tasks | workspace_tasks).distinct()
         
     
     def get_success_url(self):
@@ -271,8 +313,15 @@ class TaskDeleteView(LoginRequiredMixin ,DeleteView):
         return response
     
     def get_queryset(self):
-        return models.Task.objects.filter(creator=self.request.user)
+        own_tasks = models.Task.objects.filter(creator=self.request.user)
         
+        workspace_tasks = models.Task.objects.filter(
+            workspace__members__member=self.request.user,
+            workspace__members__is_active=True,
+            workspace__members__role__in=['owner', 'admin']
+        )
+        
+        return (own_tasks | workspace_tasks).distinct()
     
     def get_success_url(self):
         return self.request.META.get('HTTP_REFERER') or reverse_lazy('tasks:task_list')

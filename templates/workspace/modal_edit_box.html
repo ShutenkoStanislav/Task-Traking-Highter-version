@@ -1,0 +1,49 @@
+<div class="modal fade" id="EditBoxModal-{{ box.pk }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom_modal_shadow">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit {{ box.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form method="post" action="{% url 'workspace:box_update' box.pk %}">
+                {% csrf_token %}
+                <div class="modal-body p-4 d-flex flex-column gap-3">
+
+                    <div>
+                        <p class="text-muted mb-2">Box name</p>
+                        <input type="text" name="name" class="custom-search"
+                                value="{{ box.name }}" placeholder="Name" required>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-2">Color</p>
+                        <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle custom_priorety_select_btn custom_priorety_select_btn_lg shadow_custom_dropdown"
+                                type="button" data-bs-toggle="dropdown">
+                                <span id="edit-box-color-label-{{ box.pk }}">
+                                    <i class="bi bi-box2-fill" style="color: {{ box.color }};"></i> {{ box.get_color_display }}
+                                </span>
+                            </button> 
+                            <ul class="dropdown-menu shadow custom_priorety_select_menu custom_priorety_select_menu_lg">
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#123F73', '🔵Deep ocean')">🔵Deep ocean</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#D2A1FE', '🟣Violet')">🟣Violet</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#33DEB8', '🟢Aquamarine')">🟢Aquamarine</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#6D020E', '🔴Red wine')">🔴Red wine</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#FCF6A7', '🟡Sand')">🟡Sand</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#774C06', '🟤Terracotta')">🟤Terracotta</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="editBoxColor('{{ box.pk }}', '#000000', '⚫Black')">⚫Black</a></li>
+                            </ul>
+                            <input type="hidden" name="color" id="edit-box-color-{{ box.pk }}" value="{{ box.color }}">
+                        </div>
+                    </div>
+                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -313,18 +313,40 @@ class BoxDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
 
-class BoxUpdateView(LoginRequiredMixin, UpdateView):
-    model = Box
-    fields = ['name','color']
 
-    def get_queryset(self):
-        return Box.objects.filter(
-            workspace__members__member=self.request.user,
-            workspace__members__role__in=['owner', 'admin']
-        )
+@login_required
+def box_update(request, pk):
+    box = get_object_or_404(Box, pk=pk)
+
+    if request.method != "POST":
+        return redirect('workspace:workspace_detail', pk=box.workspace.pk)
     
-    def get_success_url(self):
-        return reverse_lazy('workspace:workspace_detail', kwargs={'pk': self.object.workspace.pk})
+    old_name = box.name
+    old_color = box.color
+
+    name = request.POST.get('name', '').strip()
+    color = request.POST.get('color', '').strip()
+
+    if name and name != old_name:
+        box.name = name
+        WorkspaceLog.objects.create(
+            workspace=box.workspace,
+            actor=request.user,
+            action="box_name_changed",
+            meta={"box_name": old_name, "to": name}
+        )
+
+    if color and color != old_color:
+        box.color = color
+        WorkspaceLog.objects.create(
+            workspace=box.workspace,
+            actor=request.user,
+            action="box_color_changed",
+            meta={"box_name": box.name, "from": old_color, "to": color}
+
+        )
+    box.save()
+    return redirect('workspace:workspace_detail', pk=box.workspace.pk)
 
 
 def folder_create_view(request):
@@ -608,11 +630,24 @@ def workspace_settings(request, pk):
     workspace = get_object_or_404(Workspace, pk=pk, owner=request.user)
     
     name = request.POST.get('name', '').strip()
-    if name:
+    if name and name != workspace.name:
+        old_name = workspace.name
         workspace.name = name
+        WorkspaceLog.objects.create(
+            workspace=workspace,
+            actor=request.user,
+            action="workspace_name_changed",
+            meta={"from": old_name, "to": name}
+        )
     
     if request.FILES.get('icon'):
         workspace.icon = request.FILES['icon']
+        WorkspaceLog.objects.create(
+            workspace=workspace,
+            actor=request.user,
+            action="workspace_icon_changed",
+            meta={}
+        )
     
     workspace.save()
     return redirect('workspace:workspace_detail', pk=workspace.pk)
@@ -687,6 +722,13 @@ def workspace_transfer_leave(request, pk):
         actor=request.user,
         action="member_removed",
         meta={"member": request.user.username}
+    )
+
+    WorkspaceLog.objects.create(
+        workspace=workspace,
+        actor=request.user,
+        action="workspace_owner_changed",
+        meta={"from": request.user.username, "to": new_owner_member.member.username}
     )
 
     return redirect('tasks:task_list')

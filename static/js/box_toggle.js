@@ -18,7 +18,11 @@ function toggleBox(boxId) {
     }
 }
 
-
+function editBoxColor(boxId, color, label) {
+    document.getElementById('edit-box-color-' + boxId).value = color;
+    document.getElementById('edit-box-color-label-' + boxId).innerHTML = 
+        `<i class="bi bi-box2-fill" style="color: ${color};"></i> ${label}`;
+}
 
 
 

@@ -52,9 +52,13 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
-                            <i class="bi bi-pencil-fill text-success"></i> Edit
-                        </a>
+                        {% if user_role == 'owner' or user_role == 'admin' or box.creator == request.user %}
+                            <a class="dropdown-item" href="#"
+                                data-bs-toggle="modal"
+                                data-bs-target="#EditBoxModal-{{ box.pk }}">
+                                    <i class="bi bi-pencil-fill text-success"></i> Edit
+                            </a>
+                        {% endif %}
                     </li>
                     <li>
                         <a href="#" class="dropdown-item text-danger" 
@@ -84,6 +88,7 @@
         </div>
         {% include 'workspace/modal_box_folder.html' with box=box %}
         {% include 'workspace/modal_delete_box.html' with box=box %}
+        {% include 'workspace/modal_edit_box.html' with box=box %}
     {% empty %}
         <p class="text-muted text-center mt-4">No boxes yet</p>
     {% endfor %}
